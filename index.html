@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#08aeb4">
+  <meta name="theme-color" content="#01A9CB">
   <title>AnLaundry | Giặt sấy gọn gàng, an tâm mỗi ngày</title>
   <meta name="description" content="AnLaundry chăm sóc quần áo mỗi ngày. Giặt riêng từng đơn, giá giặt sấy thông thường 15.000đ/kg, cân và xác nhận chi phí tại quầy.">
   <meta property="og:type" content="website">
@@ -12,7 +12,7 @@
   <meta property="og:description" content="Giặt riêng từng đơn. Giá 15.000đ/kg, bao gồm giặt, sấy và gấp gọn.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --teal: #08adb3;
@@ -182,12 +182,118 @@
     }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
   </style>
+
+  <style id="anclean-brand-guideline">
+    :root {
+      --teal: #01A9CB;
+      --teal-dark: #018FAF;
+      --teal-soft: #E1F3F9;
+      --ink: #01344D;
+      --muted: #52727F;
+      --line: #CDE6EF;
+      --pale: #EDF8FC;
+      --navy: #01445D;
+      --white: #FCFDFD;
+      --shadow: 0 18px 45px rgba(1, 52, 77, .12);
+    }
+    body { font-family: "Inter", Arial, sans-serif; background: var(--white); color: var(--ink); }
+    h1, h2, h3, .brand, .price-main strong { font-family: "Comfortaa", "Inter", sans-serif; }
+    .site-header { border-bottom-color: #D6EDF3; }
+    .brand { color: var(--teal); letter-spacing: -1px; }
+    .brand-mark { background: var(--teal); border-radius: 50%; box-shadow: 0 7px 18px rgba(1,169,203,.24); }
+    .nav-links { color: var(--ink); }
+    .nav-cta { background: var(--navy); }
+    .hero { background: linear-gradient(135deg, #E1F3F9 0%, #EDF8FC 52%, #D7EFF7 100%); padding-top: 64px; padding-bottom: 64px; }
+    .hero-grid { grid-template-columns: 1.35fr .85fr; gap: 28px; }
+    .hero-grid > div:first-child {
+      align-self: stretch; display: flex; flex-direction: column; justify-content: center;
+      padding: clamp(30px, 4vw, 52px); border-radius: 30px;
+      background: linear-gradient(135deg, #05AFD0 0%, #019FC1 100%);
+      box-shadow: 0 18px 38px rgba(1, 159, 193, .16);
+    }
+    .hero-grid > div:first-child .eyebrow { color: rgba(255,255,255,.88); }
+    .hero-grid > div:first-child .eyebrow::before { background: white; }
+    .hero-grid > div:first-child h1 { color: white; font-size: clamp(36px, 3.6vw, 49px); letter-spacing: -2px; }
+    .hero-grid > div:first-child h1 span { color: white; }
+    .hero-grid > div:first-child .hero-copy { color: rgba(255,255,255,.92); }
+    .hero-grid > div:first-child .btn-primary { background: white; color: var(--teal-dark); box-shadow: 0 8px 20px rgba(0,52,77,.12); }
+    .hero-grid > div:first-child .btn-primary:hover { background: #EAF9FC; }
+    .hero-grid > div:first-child .btn-light { background: rgba(255,255,255,.12); color: white; border-color: rgba(255,255,255,.55); }
+    .hero-grid > div:first-child .btn-light:hover { background: rgba(255,255,255,.2); }
+    .hero-grid > div:first-child .trust-points { color: rgba(255,255,255,.88); }
+    .hero-grid > div:first-child .trust-points span::before { color: white; }
+    .hero-visual {
+      background: linear-gradient(155deg, #FCFDFD 0%, #EAF7FB 100%);
+      border: 1px solid rgba(255,255,255,.9); box-shadow: 0 14px 36px rgba(1,68,93,.06);
+      border-radius: 30px; min-height: 435px;
+    }
+    .bubble { border-color: rgba(1,169,203,.3); }
+    .machine { box-shadow: 0 24px 45px rgba(1,68,93,.13); }
+    .machine-top { color: var(--teal-dark); border-bottom-color: var(--line); }
+    .machine-door { background: var(--teal-soft); border-color: #C6EAF3; }
+    .machine-glass { background: linear-gradient(145deg, #78D9E8 0%, #01A9CB 72%); border-color: #A4E5EF; }
+    .fresh-card { border: 1px solid #E3F1F5; }
+    .service-icon { background: var(--teal-soft); color: var(--teal-dark); border-radius: 17px; }
+    .service-card { border-color: var(--line); }
+    .service-card:hover { border-color: #8FD7E5; }
+    .pricing { background: #E1F3F9; }
+    .price-card { border-color: #D3EAF1; }
+    .price-label { background: var(--teal-soft); color: var(--teal-dark); }
+    .text-link { color: var(--teal-dark); }
+    .process { background: #FCFDFD; }
+    .process .container {
+      padding: 52px clamp(24px, 5vw, 58px);
+      border-radius: 30px;
+      background: linear-gradient(135deg, #01445D 0%, #012C43 100%);
+      box-shadow: 0 20px 45px rgba(1,44,67,.18);
+    }
+    .process .section-kicker { color: #74D8E9; }
+    .process h2 { color: white; }
+    .steps { position: relative; gap: 12px; }
+    .steps::before {
+      content: ""; position: absolute; z-index: 0; left: 15%; right: 15%; top: 36px;
+      border-top: 3px dashed rgba(1,169,203,.9);
+    }
+    .step { position: relative; z-index: 1; background: transparent; border: 0; border-radius: 0; text-align: center; padding: 0 16px; min-height: 180px; }
+    .step-number {
+      width: 74px; height: 74px; display: grid; place-items: center; border-radius: 50%;
+      margin: 0 auto 20px; background: white; color: var(--teal);
+      border: 3px solid var(--teal); box-shadow: 0 0 0 5px rgba(1,169,203,.12);
+      font-size: 28px; letter-spacing: -1px;
+    }
+    .step h3 { color: white; font-size: 15px; }
+    .step p { color: rgba(255,255,255,.78); }
+    .faq-section { background: #EAF6FA; }
+    .faq-list { border-color: #C9E1EA; }
+    .faq-item { border-color: #C9E1EA; }
+    .faq-question { color: var(--ink); }
+    .faq-question::before, .faq-plus { color: var(--teal); }
+    .faq-answer { color: #4F6F7D; }
+    .cta { background: linear-gradient(135deg, #01445D 0%, #012C43 100%); }
+    .cta .section-kicker { color: #7DE0EB; }
+    .address-box { border-color: rgba(1,169,203,.45); background: rgba(255,255,255,.08); }
+    .address-box a { color: #83E4EF; }
+    .footer { background: white; border-top: 1px solid #E1F0F4; }
+    @media (max-width: 700px) {
+      .hero { padding: 30px 0 48px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 17px; }
+      .hero-grid > div:first-child { padding: 30px 24px; border-radius: 24px; }
+      .hero-grid > div:first-child h1 { font-size: clamp(34px, 9vw, 43px); }
+      .hero-visual { min-height: 340px; }
+      .process .container { padding: 38px 22px; border-radius: 24px; }
+      .steps { gap: 24px; }
+      .steps::before { display: none; }
+      .step { min-height: 0; padding: 0 8px; }
+      .step-number { margin-bottom: 13px; }
+    }
+  </style>
+
 </head>
 <body>
   <header class="site-header" id="top">
     <div class="container nav">
       <a class="brand" href="#top" aria-label="AnLaundry - Trang chủ">
-        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.6C9.2 6.4 4.8 11.1 4.8 15.2a7.2 7.2 0 0 0 14.4 0C19.2 11.1 14.8 6.4 12 2.6Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 9.1l1.05 2.75L15.8 13l-2.75 1.05L12 16.8l-1.05-2.75L8.2 13l2.75-1.15L12 9.1Z" fill="currentColor"/></svg></span>
         <span>AnLaundry</span>
       </a>
       <nav class="nav-links" aria-label="Điều hướng chính">
@@ -308,7 +414,7 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>AnLaundry</span></a>
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.6C9.2 6.4 4.8 11.1 4.8 15.2a7.2 7.2 0 0 0 14.4 0C19.2 11.1 14.8 6.4 12 2.6Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 9.1l1.05 2.75L15.8 13l-2.75 1.05L12 16.8l-1.05-2.75L8.2 13l2.75-1.15L12 9.1Z" fill="currentColor"/></svg></span><span>AnLaundry</span></a>
       <span class="copyright">© 2026 AnLaundry. Website demo.</span>
       <a class="back-top" href="#top">Về đầu trang ↑</a>
     </div>
