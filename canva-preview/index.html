@@ -95,6 +95,9 @@
   </script>
 
   <style>
+    :root {
+      --color-text-primary: #383838;
+    }
     body {
       font-family: 'Inter', sans-serif;
       background-color: #F7F9FC;
@@ -109,6 +112,11 @@
       50% { transform: translateY(-7px); }
     }
     .animate-float { animation: floatSlow 4.5s ease-in-out infinite; }
+    @keyframes gifMotion {
+      0%, 100% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.06) translate(-1.5%, -1%); }
+    }
+    .animate-gif-motion { animation: gifMotion 6s ease-in-out infinite; }
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
@@ -152,7 +160,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .animate-float { animation: none; }
+      .animate-float, .animate-gif-motion { animation: none; }
       *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -170,7 +178,7 @@
         <span class="font-display text-2xl font-bold tracking-tight text-brand-cyan sm:text-[26px]">AnLaundry</span>
       </a>
 
-      <nav class="hidden items-center gap-7 text-sm font-semibold text-brand-ink/80 lg:flex" aria-label="Điều hướng chính">
+      <nav class="hidden items-center gap-7 text-sm font-semibold text-[#383838] lg:flex" aria-label="Điều hướng chính">
         <a href="#services" class="transition hover:text-brand-cyan">Dịch vụ</a>
         <a href="#pricing" class="transition hover:text-brand-cyan">Bảng giá</a>
         <a href="#process" class="transition hover:text-brand-cyan">Quy trình</a>
@@ -216,12 +224,12 @@
               <span>Chăm sóc quần áo mỗi ngày</span>
             </div>
 
-            <h1 class="font-display text-3xl font-bold leading-[1.16] tracking-tight text-brand-ink sm:text-5xl lg:text-[50px]">
-              Giặt sạch, thơm lâu.<br />
+            <h1 class="flex flex-col gap-[15px] font-display text-3xl font-bold leading-[1.15] tracking-tight text-brand-ink sm:text-5xl lg:text-[50px]">
+              <span>Giặt sạch, thơm lâu.</span>
               <span class="text-brand-cyan">An tâm mỗi ngày.</span>
             </h1>
 
-            <p class="max-w-xl text-base leading-relaxed text-brand-ink/80 sm:text-lg">
+            <p class="max-w-xl text-base leading-relaxed text-[#383838] sm:text-lg">
               Quần áo được kiểm tra, cân tại quầy và giặt riêng từng đơn. Bạn được xác nhận chi phí trước khi giặt.
             </p>
 
@@ -237,16 +245,16 @@
 
             <div class="grid max-w-lg grid-cols-3 gap-4 border-t border-brand-gray pt-5">
               <div>
-                <p class="font-display text-xl font-bold text-brand-ink sm:text-2xl">15.000đ/kg</p>
-                <p class="text-xs text-brand-ink/70 sm:text-sm">Giặt, sấy và gấp gọn</p>
+                <p class="font-display text-xl font-bold text-[#383838] sm:text-2xl">15.000đ/kg</p>
+                <p class="text-xs text-[#383838]/80 sm:text-sm">Giặt, sấy và gấp gọn</p>
               </div>
               <div>
                 <p class="font-display text-xl font-bold text-brand-cyan sm:text-2xl">Giặt riêng</p>
-                <p class="text-xs text-brand-ink/70 sm:text-sm">Từng đơn hàng</p>
+                <p class="text-xs text-[#383838]/80 sm:text-sm">Từng đơn hàng</p>
               </div>
               <div>
-                <p class="font-display text-xl font-bold text-brand-ink sm:text-2xl">07:00 – 21:00</p>
-                <p class="text-xs text-brand-ink/70 sm:text-sm">Mở cửa hằng ngày</p>
+                <p class="font-display text-xl font-bold text-[#383838] sm:text-2xl">07:00 – 21:00</p>
+                <p class="text-xs text-[#383838]/80 sm:text-sm">Mở cửa hằng ngày</p>
               </div>
             </div>
           </div>
@@ -268,66 +276,14 @@
                 </div>
               </div>
 
-              <div class="relative z-10 my-4 rounded-3xl bg-white p-5 text-brand-ink shadow-lg sm:p-6">
-                <div class="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-                  <div class="flex justify-center sm:col-span-7 animate-float" aria-hidden="true">
-                    <svg class="h-44 w-56" viewBox="0 0 260 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <ellipse cx="120" cy="184" rx="88" ry="9" fill="#E9E9EC"/>
-                      <rect x="42" y="152" width="156" height="24" rx="12" fill="#F7F9FC" stroke="#D5DCE4" stroke-width="2"/>
-                      <rect x="45" y="128" width="150" height="24" rx="12" fill="#DDF4FA" stroke="#B6E6F3" stroke-width="2"/>
-                      <rect x="43" y="104" width="154" height="24" rx="12" fill="#003154"/>
-                      <rect x="46" y="80" width="148" height="24" rx="12" fill="#00A9D2"/>
-                      <rect x="48" y="56" width="144" height="24" rx="12" fill="#FFFFFF" stroke="#D5DCE4" stroke-width="2"/>
-                      <rect x="111" y="54" width="18" height="124" rx="4" fill="#00A9D2"/>
-                      <rect x="115" y="54" width="4" height="124" fill="#5CE1FF" fill-opacity="0.5"/>
-                      <path d="M120 55C105 32 76 36 84 52C90 62 112 58 120 55Z" fill="#00A9D2" stroke="#008FB3" stroke-width="1.5"/>
-                      <path d="M120 55C135 32 164 36 156 52C150 62 128 58 120 55Z" fill="#00A9D2" stroke="#008FB3" stroke-width="1.5"/>
-                      <circle cx="120" cy="55" r="7" fill="#008FB3"/>
-                      <g transform="translate(154, 72) rotate(-6)">
-                        <line x1="0" y1="0" x2="-26" y2="-14" stroke="#00A9D2" stroke-width="2"/>
-                        <rect x="0" y="0" width="66" height="74" rx="10" fill="#FFFFFF" stroke="#00A9D2" stroke-width="2"/>
-                        <circle cx="11" cy="11" r="3" fill="#00A9D2"/>
-                        <text x="33" y="30" text-anchor="middle" font-family="Comfortaa, sans-serif" font-weight="700" font-size="13" fill="#00A9D2">fresh</text>
-                        <text x="33" y="45" text-anchor="middle" font-family="Comfortaa, sans-serif" font-weight="700" font-size="11" fill="#383838">&amp;</text>
-                        <text x="33" y="60" text-anchor="middle" font-family="Comfortaa, sans-serif" font-weight="700" font-size="13" fill="#00A9D2">clean</text>
-                      </g>
-                    </svg>
-                  </div>
-
-                  <div class="space-y-3 sm:col-span-5">
-                    <div class="rounded-2xl border border-brand-gray bg-brand-bg p-3.5">
-                      <div class="mb-1 flex items-center justify-between gap-2 text-xs font-semibold text-brand-cyan">
-                        <span>Tại cửa hàng</span>
-                        <span>07:00 – 21:00</span>
-                      </div>
-                      <p class="font-display text-sm font-bold text-brand-ink">Giặt, sấy và gấp gọn</p>
-                      <p class="mt-1 text-xs leading-5 text-brand-ink/70">Giặt riêng từng đơn hàng</p>
-                    </div>
-                    <a href="tel:0966319179" class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-brand-navyLight">
-                      <span>Gọi tư vấn: 0966 319 179</span><span aria-hidden="true">→</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="relative z-10 grid grid-cols-3 gap-3 pt-2 text-center">
-                <div class="flex flex-col items-center">
-                  <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand-cyan shadow-md" aria-hidden="true">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.5C12 3.5 6 10.2 6 14.8C6 18.2 8.7 21 12 21C15.3 21 18 18.2 18 14.8C18 10.2 12 3.5 12 3.5Z"/><path d="M12 11.5L12.7 13.3L14.5 14L12.7 14.7L12 16.5L11.3 14.7L9.5 14L11.3 13.3L12 11.5Z" fill="currentColor"/></svg>
-                  </div>
-                  <span class="text-xs font-semibold leading-tight sm:text-sm">Kiểm tra quần áo</span>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand-cyan shadow-md" aria-hidden="true">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3L4.5 6.3V11.8C4.5 16.5 7.7 20.8 12 22C16.3 20.8 19.5 16.5 19.5 11.8V6.3L12 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.2L11 14.2L15.2 10"/></svg>
-                  </div>
-                  <span class="text-xs font-semibold leading-tight sm:text-sm">Cân tại quầy</span>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand-cyan shadow-md" aria-hidden="true">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2.5"/><path stroke-linecap="round" d="M12 4.5C13.5 4.5 14.5 6 14 7.5C15.5 7 17 8 17 9.5C17 11 15.5 12 14 11.5C15.5 12.5 15.5 14.5 14 15.5C12.5 16.5 11.5 15 12 13.5C11.5 15 10.5 16.5 9 15.5C7.5 14.5 7.5 12.5 9 11.5C7.5 12 6 11 6 9.5C6 8 7.5 7 9 7.5C8.5 6 9.5 4.5 12 4.5Z"/></svg>
-                  </div>
-                  <span class="text-xs font-semibold leading-tight sm:text-sm">Giặt riêng từng đơn</span>
+              <div class="relative z-10 mt-6 rounded-3xl bg-white p-3 shadow-lg sm:p-4">
+                <div class="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-cyanSoft">
+                  <img
+                    src="./watermarked_img_8500443456282732805_2.jpg"
+                    onerror="if(!this.dataset.step){this.dataset.step='1';this.src='./watermarked_img_8500443456282732805.jpg';}else{this.onerror=null;this.src='https://images.pexels.com/photos/7772177/pexels-photo-7772177.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800';}"
+                    alt="Nhân viên AnLaundry đang cho quần áo vào máy giặt hiện đại"
+                    class="h-full w-full object-cover object-center animate-gif-motion"
+                  />
                 </div>
               </div>
             </div>
@@ -339,53 +295,55 @@
     <!-- 3. SERVICES -->
     <section id="services" class="border-t border-brand-gray bg-white py-14 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto mb-12 max-w-2xl text-center">
+        <div class="mx-auto mb-12 max-w-4xl text-center">
           <span class="mb-3 inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Dịch vụ tại AnLaundry</span>
-          <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Chăm sóc quần áo theo từng nhu cầu</h2>
-          <p class="mt-4 text-sm leading-7 text-brand-ink/75 sm:text-base">Từ quần áo mặc hằng ngày đến chăn mền và các sản phẩm cần chăm sóc riêng. Nhân viên kiểm tra và tư vấn trước khi tiếp nhận.</p>
+          <h2 class="font-display text-3xl font-bold leading-tight text-[#383838] sm:text-4xl">Dịch vụ giặt sấy tại AnLaundry</h2>
+          <p class="mx-auto mt-4 max-w-3xl text-sm leading-7 text-[#383838] sm:text-base">Từ quần áo hằng ngày đến chăn mền và đồ cần chăm sóc riêng. Nhân viên kiểm tra, tư vấn và báo giá trước khi nhận giặt.</p>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-3">
-          <article class="flex flex-col justify-between rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
-            <div>
+        <div class="grid items-stretch gap-6 md:grid-cols-3">
+          <article class="flex h-full flex-col rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
+            <div class="flex-1">
               <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="13" r="4"/><path d="M8 7h.01M11 7h.01" stroke-linecap="round"/></svg>
               </div>
-              <h3 class="font-display text-xl font-bold text-brand-ink">Giặt sấy quần áo hằng ngày</h3>
-              <p class="mt-3 text-sm leading-6 text-brand-ink/75">Phù hợp với quần áo mặc hằng ngày, đồ công sở và khăn tắm. Quần áo được giặt riêng, sấy khô và gấp gọn.</p>
+              <h3 class="min-h-[3.5rem] font-display text-xl font-bold leading-snug text-[#383838]">Giặt sấy quần áo hằng ngày</h3>
+              <p class="mt-3 min-h-[6rem] text-sm leading-6 text-[#383838]">Nhận giặt quần áo thường ngày, đồ công sở và khăn tắm. Mỗi đơn được giặt riêng, sấy khô và gấp gọn.</p>
             </div>
-            <div class="mt-6 border-t border-brand-gray pt-4">
-              <span class="block text-xs font-medium text-brand-ink/60">Giá trọn gói</span>
+            <div class="mt-6 min-h-[6.5rem] border-t border-brand-gray pt-4">
+              <span class="block text-xs font-medium text-[#383838]/75">Giá trọn gói</span>
               <span class="font-display text-lg font-bold text-brand-cyan">15.000đ/kg</span>
-              <p class="mt-1 text-xs text-brand-ink/65">Đã gồm giặt, sấy và gấp gọn.</p>
+              <p class="mt-1 text-xs leading-5 text-[#383838]/80">Đã gồm giặt, sấy và gấp gọn.</p>
             </div>
           </article>
 
-          <article class="flex flex-col justify-between rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
-            <div>
+          <article class="flex h-full flex-col rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
+            <div class="flex-1">
               <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
               </div>
-              <h3 class="font-display text-xl font-bold text-brand-ink">Giặt chăn mền và đồ kích thước lớn</h3>
-              <p class="mt-3 text-sm leading-6 text-brand-ink/75">Nhận giặt chăn mền, ga giường, rèm cửa và thú bông. Nhân viên kiểm tra kích thước, chất liệu và báo giá trước khi thực hiện.</p>
+              <h3 class="min-h-[3.5rem] font-display text-xl font-bold leading-snug text-[#383838]">Giặt chăn mền và đồ cỡ lớn</h3>
+              <p class="mt-3 min-h-[6rem] text-sm leading-6 text-[#383838]">Nhận giặt chăn mền, ga giường, rèm cửa và thú bông. Nhân viên kiểm tra kích thước, chất liệu và báo giá trước khi giặt.</p>
             </div>
-            <div class="mt-6 border-t border-brand-gray pt-4">
-              <span class="block text-xs font-medium text-brand-ink/60">Giá dịch vụ</span>
-              <span class="font-display text-base font-bold text-brand-cyan">Báo giá tại quầy</span>
+            <div class="mt-6 min-h-[6.5rem] border-t border-brand-gray pt-4">
+              <span class="block text-xs font-medium text-[#383838]/75">Giá dịch vụ</span>
+              <span class="font-display text-lg font-bold text-brand-cyan">Báo giá tại quầy</span>
+              <p class="mt-1 text-xs leading-5 text-[#383838]/80">Sau khi kiểm tra sản phẩm.</p>
             </div>
           </article>
 
-          <article class="flex flex-col justify-between rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
-            <div>
+          <article class="flex h-full flex-col rounded-3xl border border-brand-gray bg-brand-bg p-6 shadow-soft transition hover:border-brand-cyan">
+            <div class="flex-1">
               <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
               </div>
-              <h3 class="font-display text-xl font-bold text-brand-ink">Tư vấn trước khi giặt</h3>
-              <p class="mt-3 text-sm leading-6 text-brand-ink/75">Nhân viên kiểm tra nhãn giặt, chất liệu và tình trạng quần áo. Sản phẩm cần chăm sóc riêng sẽ được trao đổi với bạn trước khi xử lý.</p>
+              <h3 class="min-h-[3.5rem] font-display text-xl font-bold leading-snug text-[#383838]">Tư vấn cách giặt phù hợp</h3>
+              <p class="mt-3 min-h-[6rem] text-sm leading-6 text-[#383838]">Nhân viên kiểm tra nhãn giặt, chất liệu và tình trạng sản phẩm. Bạn được tư vấn trước khi thống nhất cách giặt.</p>
             </div>
-            <div class="mt-6 border-t border-brand-gray pt-4">
-              <span class="block text-xs font-medium text-brand-ink/60">Cần tư vấn?</span>
+            <div class="mt-6 min-h-[6.5rem] border-t border-brand-gray pt-4">
+              <span class="block text-xs font-medium text-[#383838]/75">Cần tư vấn?</span>
               <a href="tel:0966319179" class="font-display text-lg font-bold text-brand-cyan hover:underline">Gọi 0966 319 179</a>
+              <p class="mt-1 text-xs leading-5 text-[#383838]/80">Liên hệ trước khi mang đồ đến.</p>
             </div>
           </article>
         </div>
@@ -398,8 +356,8 @@
         <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
           <div class="space-y-5 lg:col-span-6">
             <span class="inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Bảng giá và ước tính chi phí</span>
-            <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Cân và xác nhận chi phí tại quầy</h2>
-            <p class="text-sm leading-7 text-brand-ink/75 sm:text-base">Chi phí giặt sấy được tính theo khối lượng quần áo thực tế. Nhân viên cân và thông báo chi phí để bạn xác nhận trước khi giặt.</p>
+            <h2 class="font-display text-3xl font-bold text-[#383838] sm:text-4xl">Xác nhận chi phí tại quầy</h2>
+            <p class="text-sm leading-7 text-[#383838] sm:text-base">Chi phí giặt sấy được tính theo khối lượng quần áo thực tế. Nhân viên cân và thông báo chi phí để bạn xác nhận trước khi giặt.</p>
 
             <div class="space-y-3 rounded-3xl border border-brand-gray bg-white p-6 shadow-soft">
               <div class="flex items-start justify-between gap-4 border-b border-brand-gray pb-3.5">
@@ -461,47 +419,47 @@
           </div>
 
           <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-brand-ink shadow-soft">
+            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-[#383838] shadow-soft">
               <div class="relative aspect-[4/3] w-full overflow-hidden bg-brand-cyanSoft">
                 <img src="https://images.pexels.com/photos/4959878/pexels-photo-4959878.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Khách mang giỏ quần áo đến cửa hàng giặt sấy" class="h-full w-full object-cover object-center" loading="lazy" />
                 <span class="absolute left-3 top-3 rounded-full bg-brand-cyan px-3 py-1 font-display text-xs font-bold text-white shadow">Bước 01</span>
               </div>
               <div class="flex flex-1 flex-col p-5">
-                <h3 class="font-display text-lg font-bold text-brand-ink">Mang đồ đến cửa hàng</h3>
-                <p class="mt-2 text-sm leading-6 text-brand-ink/75">Chọn chi nhánh AnLaundry thuận tiện và mang quần áo đến quầy tiếp nhận.</p>
+                <h3 class="font-display text-lg font-bold text-[#383838]">Mang đồ đến tiệm</h3>
+                <p class="mt-2 text-sm leading-6 text-[#383838]">Chọn chi nhánh AnLaundry thuận tiện và mang quần áo đến quầy tiếp nhận.</p>
               </div>
             </article>
 
-            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-brand-ink shadow-soft">
+            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-[#383838] shadow-soft">
               <div class="relative aspect-[4/3] w-full overflow-hidden bg-brand-cyanSoft">
                 <img src="./Nữ nhân viên tư vấn tại tiệm giặt là.png" onerror="this.onerror=null;this.src='https://images.pexels.com/photos/7772177/pexels-photo-7772177.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800';" alt="Nhân viên tư vấn và kiểm tra quần áo tại quầy giặt sấy" class="h-full w-full object-cover object-center" loading="lazy" />
                 <span class="absolute left-3 top-3 rounded-full bg-brand-cyan px-3 py-1 font-display text-xs font-bold text-white shadow">Bước 02</span>
               </div>
               <div class="flex flex-1 flex-col p-5">
-                <h3 class="font-display text-lg font-bold text-brand-ink">Cân và báo giá</h3>
-                <p class="mt-2 text-sm leading-6 text-brand-ink/75">Nhân viên kiểm tra, phân loại và cân quần áo. Bạn xác nhận chi phí trước khi giặt.</p>
+                <h3 class="font-display text-lg font-bold text-[#383838]">Kiểm tra và báo giá</h3>
+                <p class="mt-2 text-sm leading-6 text-[#383838]">Nhân viên kiểm tra, phân loại và cân quần áo. Bạn xác nhận chi phí trước khi giặt.</p>
               </div>
             </article>
 
-            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-brand-ink shadow-soft">
+            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-[#383838] shadow-soft">
               <div class="relative aspect-[4/3] w-full overflow-hidden bg-brand-cyanSoft">
                 <img src="https://images.pexels.com/photos/9669475/pexels-photo-9669475.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Máy giặt tại cửa hàng giặt sấy" class="h-full w-full object-cover object-center" loading="lazy" />
                 <span class="absolute left-3 top-3 rounded-full bg-brand-cyan px-3 py-1 font-display text-xs font-bold text-white shadow">Bước 03</span>
               </div>
               <div class="flex flex-1 flex-col p-5">
-                <h3 class="font-display text-lg font-bold text-brand-ink">Giặt và sấy</h3>
-                <p class="mt-2 text-sm leading-6 text-brand-ink/75">Mỗi đơn hàng được giặt riêng, sau đó sấy khô và gấp gọn.</p>
+                <h3 class="font-display text-lg font-bold text-[#383838]">Giặt riêng từng đơn</h3>
+                <p class="mt-2 text-sm leading-6 text-[#383838]">Mỗi đơn được giặt riêng không giặt chung với đơn khác, sấy khô và gấp gọn trước khi trả..</p>
               </div>
             </article>
 
-            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-brand-ink shadow-soft">
+            <article class="flex flex-col overflow-hidden rounded-2xl border border-white/15 bg-white text-[#383838] shadow-soft">
               <div class="relative aspect-[4/3] w-full overflow-hidden bg-brand-cyanSoft">
                 <img src="https://images.pexels.com/photos/7703660/pexels-photo-7703660.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Quần áo đã gấp gọn để bàn giao cho khách" class="h-full w-full object-cover object-center" loading="lazy" />
                 <span class="absolute left-3 top-3 rounded-full bg-brand-cyan px-3 py-1 font-display text-xs font-bold text-white shadow">Bước 04</span>
               </div>
               <div class="flex flex-1 flex-col p-5">
-                <h3 class="font-display text-lg font-bold text-brand-ink">Nhận và kiểm tra quần áo</h3>
-                <p class="mt-2 text-sm leading-6 text-brand-ink/75">Đến cửa hàng theo thời gian đã hẹn. Kiểm tra số lượng và tình trạng quần áo tại quầy trước khi nhận.</p>
+                <h3 class="font-display text-lg font-bold text-[#383838]">Nhận và kiểm tra đồ</h3>
+                <p class="mt-2 text-sm leading-6 text-[#383838]">Đến cửa hàng nhận đồ. Kiểm tra số lượng và tình trạng quần áo tại quầy.</p>
               </div>
             </article>
           </div>
@@ -514,29 +472,29 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto mb-10 max-w-2xl text-center">
           <span class="mb-3 inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Tiêu chuẩn phục vụ</span>
-          <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Chăm sóc quần áo từ lúc gửi đến khi nhận</h2>
+          <h2 class="font-display text-3xl font-bold text-[#383838] sm:text-4xl">Chăm sóc quần áo từ lúc gửi đến khi nhận</h2>
         </div>
 
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <article class="rounded-2xl border border-brand-gray bg-white p-5 shadow-soft">
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-cyanSoft font-display text-base font-bold text-brand-cyan">01</span>
-            <h3 class="mt-4 font-display text-lg font-bold text-brand-ink">Phân loại quần áo</h3>
-            <p class="mt-2 text-sm leading-6 text-brand-ink/70">Kiểm tra nhãn giặt và phân loại theo màu sắc, chất liệu phù hợp.</p>
+            <h3 class="mt-4 font-display text-lg font-bold text-[#383838]">Phân loại quần áo</h3>
+            <p class="mt-2 text-sm leading-6 text-[#383838]">Kiểm tra nhãn giặt và phân loại theo màu sắc, chất liệu phù hợp.</p>
           </article>
           <article class="rounded-2xl border border-brand-gray bg-white p-5 shadow-soft">
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-cyanSoft font-display text-base font-bold text-brand-cyan">02</span>
-            <h3 class="mt-4 font-display text-lg font-bold text-brand-ink">Giặt riêng từng đơn</h3>
-            <p class="mt-2 text-sm leading-6 text-brand-ink/70">Mỗi đơn hàng được giặt trong lồng giặt riêng, không giặt chung với đơn của khách khác.</p>
+            <h3 class="mt-4 font-display text-lg font-bold text-[#383838]">Giặt riêng từng đơn</h3>
+            <p class="mt-2 text-sm leading-6 text-[#383838]">Mỗi đơn hàng được giặt trong lồng giặt riêng, sấy riêng.</p>
           </article>
           <article class="rounded-2xl border border-brand-gray bg-white p-5 shadow-soft">
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-cyanSoft font-display text-base font-bold text-brand-cyan">03</span>
-            <h3 class="mt-4 font-display text-lg font-bold text-brand-ink">Kiểm tra đồ tại quầy</h3>
-            <p class="mt-2 text-sm leading-6 text-brand-ink/70">Bạn được kiểm tra số lượng và tình trạng quần áo khi nhận.</p>
+            <h3 class="mt-4 font-display text-lg font-bold text-[#383838]">Kiểm tra đồ tại quầy</h3>
+            <p class="mt-2 text-sm leading-6 text-[#383838]">Bạn được kiểm tra số lượng và tình trạng quần áo khi nhận.</p>
           </article>
           <article class="rounded-2xl border border-brand-gray bg-white p-5 shadow-soft">
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-cyanSoft font-display text-base font-bold text-brand-cyan">04</span>
-            <h3 class="mt-4 font-display text-lg font-bold text-brand-ink">Thanh toán thuận tiện</h3>
-            <p class="mt-2 text-sm leading-6 text-brand-ink/70">Bạn có thể thanh toán bằng tiền mặt hoặc chuyển khoản tại cửa hàng.</p>
+            <h3 class="mt-4 font-display text-lg font-bold text-[#383838]">Thanh toán thuận tiện</h3>
+            <p class="mt-2 text-sm leading-6 text-[#383838]">Bạn có thể thanh toán bằng tiền mặt hoặc chuyển khoản.</p>
           </article>
         </div>
       </div>
@@ -546,9 +504,9 @@
     <section id="policies" class="border-t border-brand-gray bg-white py-14 sm:py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto mb-11 max-w-2xl text-center">
-          <span class="mb-3 inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Chính sách và hỗ trợ</span>
-          <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Chính sách phục vụ và hỗ trợ khách hàng</h2>
-          <p class="mt-4 text-sm leading-7 text-brand-ink/75 sm:text-base">Thông tin về quy trình tiếp nhận, thời gian nhận đồ, thanh toán và cách AnLaundry hỗ trợ khi có sự cố.</p>
+          <span class="mb-[15px] inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Chính sách và hỗ trợ</span>
+          <h2 class="font-display text-3xl font-bold leading-[45px] text-[#383838] sm:text-4xl sm:leading-[51px]">Chính sách phục vụ và hỗ trợ khách hàng</h2>
+          <p class="mt-4 text-sm leading-7 text-[#383838] sm:text-base">Thông tin về quy trình tiếp nhận, thời gian nhận đồ, thanh toán và cách AnLaundry hỗ trợ khi có sự cố.</p>
         </div>
 
         <div class="grid gap-6 md:grid-cols-3">
@@ -556,8 +514,8 @@
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
             </div>
-            <h3 class="font-display text-xl font-bold text-brand-ink">Khi cần hỗ trợ về đơn hàng</h3>
-            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-brand-ink/75">
+            <h3 class="font-display text-xl font-bold text-[#383838]">Khi cần hỗ trợ về đơn hàng</h3>
+            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-[#383838]">
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Khi nhận đồ, bạn vui lòng kiểm tra số lượng và tình trạng quần áo tại quầy.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Nếu phát hiện thiếu đồ, nhầm lẫn hoặc hư hỏng, hãy thông báo cho nhân viên hoặc gọi hotline <a href="tel:0966319179" class="font-semibold text-brand-cyan hover:underline">0966 319 179</a>.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>AnLaundry sẽ tiếp nhận thông tin, kiểm tra và trao đổi phương án xử lý với bạn.</span></li>
@@ -568,8 +526,8 @@
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg>
             </div>
-            <h3 class="font-display text-xl font-bold text-brand-ink">Thời gian hoàn thành đơn hàng</h3>
-            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-brand-ink/75">
+            <h3 class="font-display text-xl font-bold text-[#383838]">Thời gian hoàn thành đơn hàng</h3>
+            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-[#383838]">
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Thời gian hoàn thành được trao đổi tại quầy, tùy theo khối lượng và tình trạng quần áo.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Nhân viên thông báo thời gian dự kiến khi tiếp nhận đơn hàng.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Với chăn mền hoặc sản phẩm cần xử lý riêng, thời gian hoàn thành sẽ được trao đổi cụ thể.</span></li>
@@ -580,10 +538,10 @@
             <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-cyanSoft text-brand-cyan" aria-hidden="true">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path stroke-linecap="round" d="M2.5 10h19M6.5 14.5h4"/></svg>
             </div>
-            <h3 class="font-display text-xl font-bold text-brand-ink">Thanh toán và nhận đồ</h3>
-            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-brand-ink/75">
-              <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span><strong>Thanh toán:</strong> Tiền mặt hoặc chuyển khoản tại cửa hàng.</span></li>
-              <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span><strong>Khi nhận đồ:</strong> Cung cấp phiếu biên nhận hoặc số điện thoại đã dùng khi gửi đồ để nhân viên đối chiếu.</span></li>
+            <h3 class="font-display text-xl font-bold text-[#383838]">Thanh toán và nhận đồ</h3>
+            <ul class="mt-4 flex-1 space-y-2.5 text-sm leading-6 text-[#383838]">
+              <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span><strong>Thanh toán:</strong> Tiền mặt hoặc chuyển khoản.</span></li>
+              <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span><strong>Khi nhận đồ:</strong> Cung cấp phiếu biên nhận hoặc số điện thoại đã dùng khi gửi đồ để đối chiếu.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span><strong>Giờ nhận đồ:</strong> 07:00 – 21:00 hằng ngày.</span></li>
               <li class="flex items-start gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-cyan" aria-hidden="true"></span><span>Bạn được kiểm tra số lượng và tình trạng quần áo tại quầy trước khi hoàn tất nhận đồ.</span></li>
             </ul>
@@ -597,8 +555,8 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto mb-11 max-w-2xl text-center">
           <span class="mb-3 inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Hệ thống cửa hàng</span>
-          <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Chi nhánh AnLaundry</h2>
-          <p class="mt-3 text-sm leading-7 text-brand-ink/75 sm:text-base">Chọn cửa hàng thuận tiện để gửi và nhận quần áo. Cả hai chi nhánh mở cửa từ <strong>07:00 – 21:00</strong> hằng ngày.</p>
+          <h2 class="font-display text-3xl font-bold text-[#383838] sm:text-4xl">Chi nhánh AnLaundry</h2>
+          <p class="mt-3 text-sm leading-7 text-[#383838] sm:text-base">Chọn cửa hàng thuận tiện để gửi và nhận quần áo. Cả hai chi nhánh mở cửa từ <strong>07:00 – 21:00</strong> hằng ngày.</p>
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
@@ -606,16 +564,16 @@
             <div>
               <div class="flex items-center justify-between gap-3">
                 <span class="rounded-full bg-brand-cyanSoft px-3 py-1 text-xs font-bold text-brand-cyan">Chi nhánh 01</span>
-                <span class="text-xs font-semibold text-brand-ink/65">07:00 – 21:00</span>
+                <span class="text-xs font-semibold text-[#383838]/75">07:00 – 21:00</span>
               </div>
-              <h3 class="mt-4 font-display text-xl font-bold text-brand-ink">AnLaundry Hiệp Bình</h3>
-              <p class="mt-2 text-sm leading-6 text-brand-ink/75"><strong>Địa chỉ:</strong> 18A Đường số 6, Hiệp Bình, TP. Hồ Chí Minh.</p>
-              <p class="mt-1 text-sm text-brand-ink/75"><strong>Hotline:</strong> <a href="tel:0966319179" class="font-semibold text-brand-cyan hover:underline">0966 319 179</a></p>
-              <p class="mt-1 text-sm text-brand-ink/75"><strong>Giờ hoạt động:</strong> 07:00 – 21:00 hằng ngày.</p>
+              <h3 class="mt-4 font-display text-xl font-bold text-[#383838]">AnLaundry Hiệp Bình</h3>
+              <p class="mt-2 text-sm leading-6 text-[#383838]"><strong>Địa chỉ:</strong> 18A Đường số 6, Hiệp Bình, TP. Hồ Chí Minh.</p>
+              <p class="mt-1 text-sm text-[#383838]"><strong>Hotline:</strong> <a href="tel:0966319179" class="font-semibold text-brand-cyan hover:underline">0966 319 179</a></p>
+              <p class="mt-1 text-sm text-[#383838]"><strong>Giờ hoạt động:</strong> 07:00 – 21:00 hằng ngày.</p>
             </div>
             <div class="mt-6 flex flex-wrap gap-3 border-t border-brand-gray pt-4">
               <a href="https://www.google.com/maps/search/?api=1&amp;query=18A%20%C4%90%C6%B0%E1%BB%9Dng%20s%E1%BB%91%206%2C%20Hi%E1%BB%87p%20B%C3%ACnh%2C%20Th%C3%A0nh%20ph%E1%BB%91%20H%E1%BB%93%20Ch%C3%AD%20Minh" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full bg-brand-cyan px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-brand-cyanHover sm:text-sm">Xem bản đồ <span aria-hidden="true">↗</span></a>
-              <a href="tel:0966319179" class="inline-flex items-center gap-2 rounded-full border border-brand-gray bg-brand-bg px-5 py-2.5 text-xs font-semibold text-brand-ink transition hover:border-brand-cyan hover:text-brand-cyan">Gọi cửa hàng</a>
+              <a href="tel:0966319179" class="inline-flex items-center gap-2 rounded-full border border-brand-gray bg-brand-bg px-5 py-2.5 text-xs font-semibold text-[#383838] transition hover:border-brand-cyan hover:text-brand-cyan">Gọi cửa hàng</a>
             </div>
           </article>
 
@@ -623,16 +581,16 @@
             <div>
               <div class="flex items-center justify-between gap-3">
                 <span class="rounded-full bg-brand-cyanSoft px-3 py-1 text-xs font-bold text-brand-cyan">Chi nhánh 02</span>
-                <span class="text-xs font-semibold text-brand-ink/65">07:00 – 21:00</span>
+                <span class="text-xs font-semibold text-[#383838]/75">07:00 – 21:00</span>
               </div>
-              <h3 class="mt-4 font-display text-xl font-bold text-brand-ink">AnLaundry Hòa Hưng</h3>
-              <p class="mt-2 text-sm leading-6 text-brand-ink/75"><strong>Địa chỉ:</strong> 463B Cách Mạng Tháng 8, Hòa Hưng, TP. Hồ Chí Minh.</p>
-              <p class="mt-1 text-sm text-brand-ink/75"><strong>Hotline:</strong> <a href="tel:0966319179" class="font-semibold text-brand-cyan hover:underline">0966 319 179</a></p>
-              <p class="mt-1 text-sm text-brand-ink/75"><strong>Giờ hoạt động:</strong> 07:00 – 21:00 hằng ngày.</p>
+              <h3 class="mt-4 font-display text-xl font-bold text-[#383838]">AnLaundry Hòa Hưng</h3>
+              <p class="mt-2 text-sm leading-6 text-[#383838]"><strong>Địa chỉ:</strong> 463B Cách Mạng Tháng 8, Hòa Hưng, TP. Hồ Chí Minh.</p>
+              <p class="mt-1 text-sm text-[#383838]"><strong>Hotline:</strong> <a href="tel:0966319179" class="font-semibold text-brand-cyan hover:underline">0966 319 179</a></p>
+              <p class="mt-1 text-sm text-[#383838]"><strong>Giờ hoạt động:</strong> 07:00 – 21:00 hằng ngày.</p>
             </div>
             <div class="mt-6 flex flex-wrap gap-3 border-t border-brand-gray pt-4">
               <a href="https://www.google.com/maps/search/?api=1&amp;query=463B%20C%C3%A1ch%20M%E1%BA%A1ng%20Th%C3%A1ng%208%2C%20H%C3%B2a%20H%C6%B0ng%2C%20Th%C3%A0nh%20ph%E1%BB%91%20H%E1%BB%93%20Ch%C3%AD%20Minh" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full bg-brand-cyan px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-brand-cyanHover sm:text-sm">Xem bản đồ <span aria-hidden="true">↗</span></a>
-              <a href="tel:0966319179" class="inline-flex items-center gap-2 rounded-full border border-brand-gray bg-brand-bg px-5 py-2.5 text-xs font-semibold text-brand-ink transition hover:border-brand-cyan hover:text-brand-cyan">Gọi cửa hàng</a>
+              <a href="tel:0966319179" class="inline-flex items-center gap-2 rounded-full border border-brand-gray bg-brand-bg px-5 py-2.5 text-xs font-semibold text-[#383838] transition hover:border-brand-cyan hover:text-brand-cyan">Gọi cửa hàng</a>
             </div>
           </article>
         </div>
@@ -644,39 +602,39 @@
       <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div class="mb-9 text-center">
           <span class="mb-3 inline-block rounded-full bg-brand-cyanSoft px-3.5 py-1.5 text-xs font-bold tracking-wide text-brand-cyan">Giải đáp thắc mắc</span>
-          <h2 class="font-display text-3xl font-bold text-brand-ink sm:text-4xl">Câu hỏi thường gặp</h2>
-          <p class="mt-3 text-sm leading-6 text-brand-ink/70">Thông tin cần biết trước khi mang quần áo đến AnLaundry.</p>
+          <h2 class="font-display text-3xl font-bold text-[#383838] sm:text-4xl">Câu hỏi thường gặp</h2>
+          <p class="mt-3 text-sm leading-6 text-[#383838]">Thông tin cần biết trước khi mang quần áo đến AnLaundry.</p>
         </div>
 
         <div class="space-y-3">
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer1"><span>Giá giặt sấy được tính như thế nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer1" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>Giặt sấy quần áo thông thường có giá 15.000đ/kg, đã gồm giặt, sấy và gấp gọn. Nhân viên cân quần áo và thông báo chi phí để bạn xác nhận trước khi giặt. Chăn mền và sản phẩm đặc biệt được báo giá riêng.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer1"><span>Giá giặt sấy được tính như thế nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer1" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>Giặt sấy quần áo thông thường có giá 15.000đ/kg, đã gồm giặt, sấy và gấp gọn. Nhân viên cân quần áo và thông báo chi phí để bạn xác nhận trước khi giặt. Chăn mền và sản phẩm đặc biệt được báo giá riêng.</div>
           </div>
 
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer2"><span>Tôi có cần phân loại quần áo trước khi mang đến không?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer2" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>Bạn không cần tự phân loại trước. Nhân viên sẽ kiểm tra và phân loại quần áo khi tiếp nhận. Nếu có sản phẩm cần xử lý riêng, bạn hãy thông báo để được tư vấn.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer2"><span>Tôi có cần phân loại quần áo trước khi mang đến không?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer2" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>Bạn không cần tự phân loại trước. Nhân viên sẽ kiểm tra và phân loại quần áo khi tiếp nhận. Nếu có sản phẩm cần xử lý riêng, bạn hãy thông báo để được tư vấn.</div>
           </div>
 
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer3"><span>Bao lâu thì tôi có thể nhận lại quần áo?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer3" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>Thời gian hoàn thành tùy theo khối lượng và tình trạng đơn hàng. Nhân viên sẽ thông báo thời gian dự kiến khi tiếp nhận.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer3"><span>Bao lâu thì tôi có thể nhận lại quần áo?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer3" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>Thời gian hoàn thành tùy theo khối lượng và tình trạng đơn hàng. Nhân viên sẽ thông báo thời gian dự kiến khi tiếp nhận.</div>
           </div>
 
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer4"><span>AnLaundry có nhận giặt chăn mền và thú bông không?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer4" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>AnLaundry nhận giặt chăn mền, ga giường, rèm cửa và thú bông. Bạn có thể mang sản phẩm đến cửa hàng để nhân viên kiểm tra kích thước, chất liệu và báo giá trước khi giặt.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer4"><span>AnLaundry có nhận giặt chăn mền và thú bông không?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer4" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>AnLaundry nhận giặt chăn mền, ga giường, rèm cửa và thú bông. Bạn có thể mang sản phẩm đến cửa hàng để nhân viên kiểm tra kích thước, chất liệu và báo giá trước khi giặt.</div>
           </div>
 
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer5"><span>AnLaundry có những hình thức thanh toán nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer5" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>Bạn có thể thanh toán bằng tiền mặt hoặc chuyển khoản tại cửa hàng.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer5"><span>AnLaundry có những hình thức thanh toán nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer5" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>Bạn có thể thanh toán bằng tiền mặt hoặc chuyển khoản tại cửa hàng.</div>
           </div>
 
           <div class="overflow-hidden rounded-2xl border border-brand-gray bg-brand-bg/50">
-            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-brand-ink transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer6"><span>Tôi có thể mang đồ đến cửa hàng vào khung giờ nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
-            <div id="faqAnswer6" class="faq-answer px-5 pb-5 text-sm leading-7 text-brand-ink/75" hidden>AnLaundry mở cửa từ 07:00 – 21:00 hằng ngày tại hai chi nhánh Hiệp Bình và Hòa Hưng. Xem địa chỉ và hướng dẫn đường đi tại mục Chi nhánh.</div>
+            <button class="faq-trigger flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-bold text-[#383838] transition hover:text-brand-cyan sm:text-base" type="button" aria-expanded="false" aria-controls="faqAnswer6"><span>Tôi có thể mang đồ đến cửa hàng vào khung giờ nào?</span><span class="faq-symbol text-xl text-brand-cyan" aria-hidden="true">+</span></button>
+            <div id="faqAnswer6" class="faq-answer px-5 pb-5 text-sm leading-7 text-[#383838]" hidden>AnLaundry mở cửa từ 07:00 – 21:00 hằng ngày tại hai chi nhánh Hiệp Bình và Hòa Hưng. Xem địa chỉ và hướng dẫn đường đi tại mục Chi nhánh.</div>
           </div>
         </div>
       </div>
@@ -687,10 +645,15 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="relative flex flex-col items-center justify-between gap-8 overflow-hidden rounded-[2rem] bg-brand-cyan p-8 text-white shadow-cyan-glow sm:p-12 lg:flex-row lg:p-14">
           <svg class="pointer-events-none absolute -bottom-12 -right-8 h-72 w-64 text-white/15" viewBox="0 0 44 50" fill="none" aria-hidden="true"><path d="M22 4C22 4 6 21.2 6 32.5C6 41.3366 13.1634 48 22 48C30.8366 48 38 41.3366 38 32.5C38 21.2 22 4 22 4Z" stroke="currentColor" stroke-width="5"/><path d="M22 23.5C22.45 27.6 24.4 29.55 28.5 30C24.4 30.45 22.45 32.4 22 36.5C21.55 32.4 19.6 30.45 15.5 30C19.6 29.55 21.55 27.6 22 23.5Z" fill="currentColor"/></svg>
+
           <div class="relative z-10 max-w-2xl text-center lg:text-left">
-            <h2 class="font-display text-3xl font-bold leading-tight sm:text-4xl">Bạn cần giặt sấy? Ghé AnLaundry nhé!</h2>
-            <p class="mt-3 text-sm text-white/95 sm:text-base">Mang quần áo đến cửa hàng để được kiểm tra, cân và xác nhận chi phí trước khi giặt.</p>
+            <h2 class="flex flex-col gap-[15px] font-display text-3xl font-bold leading-[1.15] sm:text-4xl">
+              <span>Bạn cần giặt sấy?</span>
+              <span>Ghé AnLaundry!</span>
+            </h2>
+            <p class="mt-4 text-sm text-white/95 sm:text-base">Mang quần áo đến cửa hàng để được kiểm tra, cân và xác nhận chi phí trước khi giặt.</p>
           </div>
+
           <div class="relative z-10 flex flex-wrap items-center justify-center gap-4">
             <a href="tel:0966319179" class="inline-flex items-center gap-3.5 rounded-full bg-white py-3 pl-7 pr-2.5 text-base font-bold text-brand-cyan shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-brand-bg">
               <span>Gọi 0966 319 179</span>
