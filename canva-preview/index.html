@@ -128,11 +128,18 @@
       appearance: none;
       background: transparent;
       cursor: pointer;
+      --range-progress: 21.05%;
     }
     input[type="range"]::-webkit-slider-runnable-track {
       height: 8px;
       border-radius: 9999px;
-      background: #E9E9EC;
+      background: linear-gradient(
+        to right,
+        #00A9D2 0%,
+        #00A9D2 var(--range-progress),
+        #E9E9EC var(--range-progress),
+        #E9E9EC 100%
+      );
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
@@ -150,7 +157,13 @@
     input[type="range"]::-moz-range-track {
       height: 8px;
       border-radius: 9999px;
-      background: #E9E9EC;
+      background: linear-gradient(
+        to right,
+        #00A9D2 0%,
+        #00A9D2 var(--range-progress),
+        #E9E9EC var(--range-progress),
+        #E9E9EC 100%
+      );
     }
     input[type="range"]::-moz-range-thumb {
       background-color: #00A9D2;
@@ -752,6 +765,11 @@
 
       const weight = Number.parseInt(slider.value, 10);
       if (!Number.isFinite(weight)) return;
+
+      const min = Number.parseFloat(slider.min) || 0;
+      const max = Number.parseFloat(slider.max) || 100;
+      const progress = max > min ? ((weight - min) / (max - min)) * 100 : 0;
+      slider.style.setProperty('--range-progress', `${progress}%`);
 
       const total = weight * 15000;
       weightDisplay.textContent = `${weight} kg`;
