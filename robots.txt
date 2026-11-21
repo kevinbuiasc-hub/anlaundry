@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /canva-preview/
+
+Sitemap: https://www.anlaundry.com/sitemap.xml
