@@ -1,23 +1,42 @@
 # AnLaundry CRM
 
-CRM vận hành riêng cho AnLaundry. Thư mục này độc lập với website marketing ở repository root.
+CRM vận hành đa chi nhánh, tách biệt với website marketing ở thư mục gốc.
 
-## Kiến trúc
+## Kiến trúc hiện tại
 - Frontend: HTML/CSS/JavaScript module, Supabase JS v2.
-- Authentication: Supabase Auth.
-- Database: Supabase PostgreSQL + Row Level Security (RLS).
-- Hosting: GitHub Pages tại đường dẫn /crm/ sau khi cấu hình triển khai.
+- Auth: Supabase Auth.
+- Database: Supabase PostgreSQL với Row Level Security (RLS).
+- Source control: nhánh `crm-development`; không sửa website marketing trên `main`.
+- Đường dẫn dự kiến sau khi triển khai: `https://www.anlaundry.com/crm/`. Cổng khách hàng dự kiến: `https://www.anlaundry.com/account/`.
 
-## Thiết lập Supabase
-1. Tạo project riêng trên Supabase.
-2. Mở SQL Editor và chạy toàn bộ `schema.sql`.
-3. Tạo user đầu tiên trong Authentication.
-4. Cấp role owner cho user đầu tiên bằng câu SQL bootstrap ở cuối schema.sql.
-5. Tạo thêm user cho nhân viên trong Supabase Auth; trigger tự tạo profile với role staff.
-6. Cập nhật `config.js` bằng Project URL và publishable/anon key. Chỉ dùng key công khai; không bao giờ dùng service_role key ở frontend.
+## Quyết định nghiệp vụ
+- Khách hàng dùng chung toàn hệ thống.
+- Nhân viên muốn làm tại chi nhánh khác phải gửi yêu cầu và được duyệt; quyền truy cập chỉ có hiệu lực trong khoảng thời gian được duyệt.
+- Danh mục dịch vụ chung, bảng giá riêng theo từng chi nhánh.
+- Đơn hàng lưu chi nhánh thực tế tiếp nhận; chi tiết đơn lưu snapshot giá tại thời điểm tạo.
+- Thanh toán hỗ trợ tiền mặt và chuyển khoản; báo cáo phân biệt doanh thu theo đơn với tiền thực thu.
 
-## Triển khai
-CRM chưa được đưa lên domain production. Sau khi kiểm thử Supabase, cấu hình GitHub Pages để phục vụ thư mục `crm/` tại `https://www.anlaundry.com/crm/`. Không thay thế `index.html` ở thư mục gốc.
+Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-## Giai đoạn hiện tại
-Khởi tạo cấu trúc, giao diện đăng nhập và schema nền tảng. Các màn hình nghiệp vụ CRUD, báo cáo, kiểm thử RLS và quy trình backup cần hoàn thiện trước khi sử dụng dữ liệu khách hàng thật.
+## Thiết lập Supabase — chưa thực hiện
+1. Tạo project Supabase riêng cho AnLaundry.
+2. Chỉ sau khi rà soát schema và chuẩn bị project trống, chạy `schema.sql` trong SQL Editor.
+3. Tạo Auth user đầu tiên và thêm hồ sơ owner bằng câu bootstrap trong schema. Không bật public employee signup.
+4. Tạo chi nhánh và phân công owner/manager/staff.
+5. Tạo bảng giá cho từng chi nhánh trong `branch_service_prices`.
+6. Cập nhật `config.js` bằng Project URL và publishable key (hoặc anon key legacy). Key này có thể nằm ở frontend khi RLS đúng.
+7. Tuyệt đối không đưa `service_role` key, database password hoặc secret vào GitHub/frontend.
+
+## Trạng thái triển khai
+Đây mới là thiết kế database nền tảng và mã khởi tạo. Chưa có project Supabase được kết nối, chưa có dữ liệu thật, chưa hoàn thiện giao diện POS, cổng khách hàng, báo cáo, RPC tạo đơn an toàn, kiểm thử RLS hay backup. Không dùng cho vận hành thật trước khi hoàn thành checklist production.
+
+## Lộ trình
+1. **Foundation:** duyệt schema, tạo Supabase dev, chạy schema, tạo owner/chi nhánh/nhân sự/bảng giá.
+2. **Security:** viết và chạy ma trận test RLS cho 4 vai trò và các tình huống chi nhánh.
+3. **Staff CRM:** đăng nhập, chọn chi nhánh được cấp quyền, yêu cầu hỗ trợ, khách hàng, đơn hàng, thanh toán, chi phí.
+4. **Customer portal:** liên kết tài khoản đã xác minh, chỉ xem đơn của chính khách hàng.
+5. **Reports:** doanh thu toàn hệ thống, theo chi nhánh, phương thức thanh toán, chi phí và công nợ.
+6. **Pilot & release:** nhập dữ liệu mẫu, UAT tại một chi nhánh, backup/restore test, sau đó mới cấu hình GitHub Pages và merge có kiểm soát.
+
+## Lưu ý
+`schema.sql` là bản khởi tạo cho Supabase project mới, không phải migration tự động cho database đang có dữ liệu. Cần rà soát và kiểm thử trên project development trước khi chạy production.
