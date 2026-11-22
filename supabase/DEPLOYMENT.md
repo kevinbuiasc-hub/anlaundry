@@ -49,3 +49,12 @@ Optional:
 - The browser UI calls the function with the signed-in Owner/Manager JWT. The gateway's legacy verifier is off for compatibility with new API keys; application-level JWT and role checks inside the function are mandatory.
 - The function checks the caller's role and branch authority before creating an Auth invitation, profile and primary branch assignment.
 - Managers can create Staff only. Only Owners can create Managers.
+
+## Password recovery and Auth URL configuration
+Before requesting another password reset:
+1. Deploy the CRM frontend to a stable preview origin.
+2. In Supabase Dashboard → Authentication → URL Configuration, set **Site URL** to the stable preview base URL (not `http://localhost:3000`).
+3. Add the exact CRM URL/path used by the deployed preview to **Redirect URLs**. For temporary local work, allow-list `http://localhost:3000/**` only when a local server is running.
+4. The CRM forgot-password screen calls `resetPasswordForEmail(email, { redirectTo: current CRM page URL })`; that exact destination must be allowed.
+5. Supabase will return the user to the CRM with a recovery session. The app listens for `PASSWORD_RECOVERY` and calls `auth.updateUser({ password })` after the user confirms a new password.
+6. After correcting redirect configuration, request a new reset email. Previously expired/used one-time links cannot be reused.
