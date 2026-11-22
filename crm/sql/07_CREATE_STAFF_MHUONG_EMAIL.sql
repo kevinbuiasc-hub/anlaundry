@@ -2,13 +2,13 @@
 -- AnLaundry CRM Development: create Mỹ Hương's staff profile using email/password Auth.
 -- This path avoids SMS/Twilio during development.
 --
--- Login email: buingockhuong89@gmail.com (Gmail plus-address alias for testing)
+-- Login email: buingockhuong89@gmail.com
 -- Staff contact phone: 0839649049
 -- Branch: CN02 — AnLaundry Hòa Hưng
 --
 -- PRECONDITION:
 -- 1) Create this Auth user first in Supabase Dashboard > Authentication > Users.
--- 2) Use the login email above and set a temporary password.
+-- 2) Use the login email above and set a secure password.
 -- 3) If email confirmation is required, confirm the alias email from the owner's Gmail inbox.
 -- 4) Make sure branch CN02 exists (run 06_SETUP_CN02_HOAHUNG.sql).
 -- 5) Run this query as the project database owner in Supabase SQL Editor.
