@@ -1,0 +1,4 @@
+# AnLaundry Supabase project configuration
+# Keep JWT verification enabled for administrative Edge Functions.
+[functions.admin-create-employee]
+verify_jwt = true
