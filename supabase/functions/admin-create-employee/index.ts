@@ -1,7 +1,7 @@
 // Supabase Edge Function: admin-create-employee
-// Deploy with: supabase functions deploy admin-create-employee
-// Supabase injects SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY.
-// Never move the service-role key into browser code or GitHub frontend config.
+// Creates an Auth invitation, employee profile and branch assignment.
+// Deploy from Supabase Dashboard > Edge Functions or with the Supabase CLI.
+// The secret key is read only in this server-side function, never in browser code.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -18,25 +18,48 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
   });
 }
 
+// New Supabase API key variables are JSON dictionaries (usually keyed by "default").
+// Keep legacy support for existing projects still exposing anon/service_role variables.
+function readDefaultKey(envName: string): string | null {
+  const raw = Deno.env.get(envName);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") {
+      const candidate = parsed.default ?? Object.values(parsed)[0];
+      return typeof candidate === "string" ? candidate : null;
+    }
+  } catch {
+    // Legacy variables are plain strings, not JSON.
+  }
+  return raw;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const publishableKey =
+    readDefaultKey("SUPABASE_PUBLISHABLE_KEYS") ??
+    Deno.env.get("SUPABASE_ANON_KEY");
+  const secretKey =
+    readDefaultKey("SUPABASE_SECRET_KEYS") ??
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const authorization = req.headers.get("Authorization");
 
-  if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-    return jsonResponse({ error: "Server environment is not configured." }, 500);
+  if (!supabaseUrl || !publishableKey || !secretKey) {
+    return jsonResponse({
+      error: "Supabase Edge Function environment is incomplete. Check the default Supabase URL, publishable and secret keys.",
+    }, 500);
   }
   if (!authorization) return jsonResponse({ error: "Authentication required." }, 401);
 
-  const caller = createClient(supabaseUrl, anonKey, {
+  const caller = createClient(supabaseUrl, publishableKey, {
     global: { headers: { Authorization: authorization } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const admin = createClient(supabaseUrl, serviceRoleKey, {
+  const admin = createClient(supabaseUrl, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
@@ -68,7 +91,7 @@ Deno.serve(async (req: Request) => {
   const branchId = String(input.branch_id ?? "");
 
   if (!fullName || fullName.length > 120) return jsonResponse({ error: "Họ tên không hợp lệ." }, 400);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254) {
     return jsonResponse({ error: "Email không hợp lệ." }, 400);
   }
   if (phone.length > 20) return jsonResponse({ error: "Số điện thoại không hợp lệ." }, 400);
@@ -78,7 +101,7 @@ Deno.serve(async (req: Request) => {
   }
   if (!branchId) return jsonResponse({ error: "Vui lòng chọn chi nhánh." }, 400);
 
-  // This helper evaluates auth.uid() from the caller JWT, not the service-role context.
+  // This RPC runs with the caller's JWT so auth.uid() reflects the actual Manager/Owner.
   const { data: canManage, error: accessError } = await caller.rpc("can_manage_branch", {
     p_branch_id: branchId,
   });
@@ -96,9 +119,10 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: "Chi nhánh không tồn tại hoặc đã ngừng hoạt động." }, 404);
   }
 
-  // Create a Supabase Auth invitation. User sets their own password from the invitation email.
+  const redirectTo = Deno.env.get("EMPLOYEE_INVITE_REDIRECT_URL") || undefined;
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: { full_name: fullName },
+    ...(redirectTo ? { redirectTo } : {}),
   });
 
   if (inviteError || !invited.user) {
