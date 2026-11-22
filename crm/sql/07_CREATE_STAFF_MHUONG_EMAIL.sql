@@ -2,7 +2,7 @@
 -- AnLaundry CRM Development: create Mỹ Hương's staff profile using email/password Auth.
 -- This path avoids SMS/Twilio during development.
 --
--- Login email: kevinbuiasc+huong@gmail.com (Gmail plus-address alias for testing)
+-- Login email: kevinbuiasc@gmail.com (Gmail plus-address alias for testing)
 -- Staff contact phone: 0839649049
 -- Branch: CN02 — AnLaundry Hòa Hưng
 --
@@ -20,7 +20,7 @@ ALTER TABLE public.profiles
 
 DO $$
 DECLARE
-  v_email text := 'kevinbuiasc+huong@gmail.com';
+  v_email text := 'kevinbuiasc@gmail.com';
   v_phone text := '0839649049';
   v_full_name text := 'Mỹ Hương';
   v_role text := 'staff';
@@ -118,4 +118,4 @@ FROM public.profiles p
 JOIN auth.users u ON u.id = p.id
 JOIN public.staff_branch_assignments a ON a.user_id = p.id
 JOIN public.branches b ON b.id = a.branch_id
-WHERE lower(u.email) = lower('kevinbuiasc+huong@gmail.com');
+WHERE lower(u.email) = lower('kevinbuiasc@gmail.com');
