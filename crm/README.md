@@ -62,3 +62,12 @@ Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 - CRM hỗ trợ đăng nhập bằng email/mật khẩu, gửi email khôi phục tại màn hình đăng nhập và cập nhật mật khẩu khi Supabase phát sự kiện `PASSWORD_RECOVERY`.
 - Liên kết khôi phục dùng `redirectTo` bằng URL trang CRM hiện tại. URL này phải được thêm vào Supabase Authentication → URL Configuration → Redirect URLs.
 - Không dùng `http://localhost:3000` làm Site URL cho môi trường preview/production. Chỉ allow-list localhost khi server local thật sự đang chạy.
+
+
+## Interactive UI demo
+- Open the CRM login screen and choose **Trải nghiệm bản demo**.
+- Demo modules: overview, orders (create/update status), shared customers (create/edit), payments (cash/bank transfer), monthly reports, staff (add demo staff/activate/deactivate), branches (add demo branch), branch-specific service pricebook, and branch-transfer approval workflow.
+- Demo data is stored only in the browser using localStorage key `anlaundry.crm.demo.v1`. It is separate from Supabase and does not create/update real customer, order, payment, staff, branch, or pricing records.
+- Use **Đặt lại demo** on the overview page to restore sample data. Use **Thoát demo** to return to real Supabase login.
+- To preview locally from `crm-development`: `git pull origin crm-development`, then run a local static server from the repository root (for example `python3 -m http.server 3000`) and open `http://localhost:3000/crm/`.
+- This is a front-end workflow prototype for user acceptance testing, not a production-ready transactional system. Production actions must later be wired to Supabase RPC/Edge Functions and protected by RLS.
