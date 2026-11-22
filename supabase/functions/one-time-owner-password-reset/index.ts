@@ -44,18 +44,46 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
 
+  // Supabase custom Function Secrets are exposed through Deno.env.
+  // Do not trim secrets silently: whitespace is part of a secret and must match exactly.
   const configuredToken = Deno.env.get("OWNER_PASSWORD_BOOTSTRAP_TOKEN") ?? "";
   const password = Deno.env.get("OWNER_PASSWORD_TO_SET") ?? "";
   const providedToken = req.headers.get("x-owner-bootstrap-token") ?? "";
 
+  if (!configuredToken) {
+    return json({
+      error: "Secret OWNER_PASSWORD_BOOTSTRAP_TOKEN is missing from this deployed Function environment.",
+      action: "Open Edge Functions → Secrets, confirm the exact secret name/value, save it, then redeploy this Function so its runtime loads the updated environment.",
+    }, 500);
+  }
   if (configuredToken.length < 32) {
-    return json({ error: "OWNER_PASSWORD_BOOTSTRAP_TOKEN must be at least 32 characters." }, 500);
+    return json({
+      error: "Secret OWNER_PASSWORD_BOOTSTRAP_TOKEN is present but shorter than 32 characters.",
+      configured_length: configuredToken.length,
+      action: "Replace the secret with a new random value of at least 32 characters, save, then redeploy this Function.",
+    }, 500);
+  }
+  if (!providedToken) {
+    return json({
+      error: "Missing header x-owner-bootstrap-token.",
+      action: "In Test → Headers, add the exact header name and paste the original token value (not its SHA256 digest).",
+    }, 400);
   }
   if (!constantTimeEqual(providedToken, configuredToken)) {
-    return json({ error: "Unauthorized." }, 401);
+    return json({ error: "The supplied bootstrap token does not match the Function Secret." }, 401);
+  }
+  if (!password) {
+    return json({
+      error: "Secret OWNER_PASSWORD_TO_SET is missing from this deployed Function environment.",
+      action: "Add or correct OWNER_PASSWORD_TO_SET in Edge Functions → Secrets, save, then redeploy this Function.",
+    }, 500);
   }
   if (password.length < 12) {
-    return json({ error: "OWNER_PASSWORD_TO_SET must be at least 12 characters." }, 500);
+    return json({
+      error: "Secret OWNER_PASSWORD_TO_SET is present but shorter than 12 characters.",
+      configured_length: password.length,
+      action: "Set a password of at least 12 characters, save, then redeploy this Function.",
+    }, 500);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
