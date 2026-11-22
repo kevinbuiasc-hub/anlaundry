@@ -1,4 +1,4 @@
-// Điền Project URL và publishable/anon key từ Supabase Dashboard > Project Settings > API.
-// Chỉ dùng publishable/anon key ở trình duyệt. TUYỆT ĐỐI KHÔNG đưa service_role key vào đây.
-export const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-export const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+// Supabase client configuration for AnLaundry CRM Development.
+// Publishable keys are intended for browser use; database access is controlled by RLS.
+export const SUPABASE_URL = "https://ropcvgwbwmhbyfsewpqe.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable_yjdntkeQLZafak9PwKc49A_zzKg2_sx";
