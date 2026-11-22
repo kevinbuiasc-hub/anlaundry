@@ -2,14 +2,14 @@
 -- Create the employee profile and assign Mỹ Hương to branch CN02.
 -- IMPORTANT:
 -- 1) First create/invite a phone-based Auth user in Supabase Dashboard > Authentication > Users.
--- 2) Use the E.164 phone format (+84...), and ensure it matches v_phone below.
--- 3) Replace the phone placeholder before running.
+-- 2) Use the E.164 phone format (+84...). Mỹ Hương's number is prefilled below.
+-- 3) Ensure the verified Auth phone matches v_phone below.
 -- 4) Run as the project database owner in Supabase SQL Editor.
 -- 5) This script does not create the Auth user or send the OTP.
 
 DO $$
 DECLARE
-  v_phone text := '+84708401378'; -- Replace with Mỹ Hương's verified Auth phone
+  v_phone text := '+84708401378'; -- Mỹ Hương's phone in international E.164 format
   v_full_name text := 'Mỹ Hương';
   v_role text := 'staff';
   v_branch_code text := 'CN02';
@@ -19,7 +19,7 @@ DECLARE
   v_owner_id uuid;
 BEGIN
   IF v_phone = '+84708401378' OR v_phone !~ '^\+[1-9][0-9]{7,14}$' THEN
-    RAISE EXCEPTION 'Replace v_phone with Mỹ Hương Auth phone in E.164 format, e.g. +8490xxxxxxx.';
+    RAISE EXCEPTION 'Set Mỹ Hương Auth phone in E.164 format, e.g. +8490xxxxxxx.';
   END IF;
 
   SELECT id INTO v_user_id
