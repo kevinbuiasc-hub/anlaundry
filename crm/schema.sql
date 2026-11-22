@@ -383,7 +383,7 @@ create policy payments_customer_read_own on public.payments for select to authen
   using (exists (select 1 from public.orders o where o.id = order_id and o.customer_id = public.current_customer_id()));
 create policy payments_staff_insert on public.payments for insert to authenticated
   with check (public.has_branch_access(branch_id) and received_by = auth.uid()
-    and exists (select 1 from public.orders o where o.id = order_id and o.branch_id = branch_id));
+    and exists (select 1 from public.orders o where o.id = payments.order_id and o.branch_id = payments.branch_id));
 create policy payments_manager_update on public.payments for update to authenticated
   using (public.can_manage_branch(branch_id)) with check (public.can_manage_branch(branch_id));
 create policy payments_manager_delete on public.payments for delete to authenticated
