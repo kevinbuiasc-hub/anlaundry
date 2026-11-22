@@ -52,3 +52,5 @@ Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 - Edge Function dùng `SUPABASE_SERVICE_ROLE_KEY` ở môi trường server Supabase; không đặt khóa này trong `crm/config.js` hay bất kỳ mã frontend nào.
 - Cần triển khai hàm bằng Supabase CLI: `supabase functions deploy admin-create-employee`. Các secret mặc định của Supabase Edge Functions cần sẵn có trong môi trường. Email mời phụ thuộc cấu hình Email Auth/SMTP của project.
 - Chưa triển khai Edge Function lên Supabase và chưa thể gửi lời mời nhân viên từ giao diện cho đến khi bước deploy hoàn tất.
+
+- Manager visibility is restricted by RLS to employee profiles with an active assignment in branches they manage. Apply `crm/sql/08_RESTRICT_MANAGER_STAFF_VISIBILITY.sql` to an already initialized development database before enabling Manager access to the staff screen.
