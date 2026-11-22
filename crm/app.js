@@ -19,18 +19,53 @@ if (!configured) {
 
   init();
 
-  async function init() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) return showLogin(error.message);
-    if (data.session) await showDashboard(data.session);
-    else showLogin();
+  let passwordRecoveryActive = false;
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      window.setTimeout(() => {
-        if (session) showDashboard(session);
-        else showLogin();
+  async function init() {
+    // Subscribe before getSession() so the PASSWORD_RECOVERY event is not missed.
+    supabase.auth.onAuthStateChange((event, session) => {
+      window.setTimeout(async () => {
+        if (event === "PASSWORD_RECOVERY") {
+          passwordRecoveryActive = true;
+          showUpdatePassword();
+          return;
+        }
+        if (passwordRecoveryActive) return;
+        if (session) await showDashboard(session);
+        else if (!document.querySelector("#login-form") &&
+                 !document.querySelector("#forgot-form") &&
+                 !document.querySelector("#recovery-form")) {
+          showLogin();
+        }
       }, 0);
     });
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) return showLogin(error.message);
+    if (!passwordRecoveryActive) {
+      if (data.session) await showDashboard(data.session);
+      else showLogin();
+    }
+
+    // Expired/invalid email links are returned as error fragments in the URL.
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const errorCode = params.get("error_code");
+    if (errorCode) {
+      const description = params.get("error_description") || "Liên kết xác thực không còn hợp lệ.";
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      if (errorCode === "otp_expired") {
+        showLogin("Liên kết đã hết hạn hoặc đã được sử dụng. Hãy yêu cầu email khôi phục mới.");
+      } else {
+        showLogin(decodeURIComponent(description.replace(/\\+/g, " ")));
+      }
+    }
+  }
+
+  function authRedirectUrl() {
+    const url = new URL(window.location.href);
+    url.hash = "";
+    url.search = "";
+    return url.toString();
   }
 
   function showLogin(message = "") {
@@ -47,6 +82,7 @@ if (!configured) {
         <input id="password" type="password" autocomplete="current-password" required>
         <p class="error" id="error" role="alert">${escapeHtml(message)}</p>
         <button class="btn" type="submit">Đăng nhập</button>
+        <button class="link-button" id="forgot-password" type="button">Quên mật khẩu?</button>
       </form>`;
 
     document.querySelector("#login-form").addEventListener("submit", async (event) => {
@@ -67,6 +103,99 @@ if (!configured) {
         button.disabled = false;
         button.textContent = "Đăng nhập";
       }
+    });
+
+    document.querySelector("#forgot-password").addEventListener("click", showForgotPassword);
+  }
+
+  function showForgotPassword(message = "", success = false) {
+    root.innerHTML = `
+      <form class="auth-card" id="forgot-form">
+        <span class="brand-mark">AN</span>
+        <h1>Khôi phục mật khẩu</h1>
+        <p>Nhập email tài khoản. AnLaundry sẽ gửi liên kết đặt lại mật khẩu.</p>
+        <label for="recovery-email">Email</label>
+        <input id="recovery-email" type="email" autocomplete="email" required>
+        <p class="${success ? "success-message" : "error"}" id="recovery-message" role="status">${escapeHtml(message)}</p>
+        <button class="btn" type="submit">Gửi liên kết khôi phục</button>
+        <button class="link-button" id="back-to-login" type="button">Quay lại đăng nhập</button>
+      </form>`;
+
+    document.querySelector("#back-to-login").addEventListener("click", () => showLogin());
+    document.querySelector("#forgot-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = document.querySelector("#recovery-email").value.trim().toLowerCase();
+      const button = event.currentTarget.querySelector('button[type="submit"]');
+      const messageBox = document.querySelector("#recovery-message");
+      button.disabled = true;
+      button.textContent = "Đang gửi…";
+      messageBox.textContent = "";
+      messageBox.className = "error";
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: authRedirectUrl()
+      });
+
+      if (error) {
+        messageBox.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Gửi liên kết khôi phục";
+        return;
+      }
+
+      messageBox.className = "success-message";
+      messageBox.textContent = "Nếu email tồn tại trong hệ thống, liên kết khôi phục sẽ được gửi đến hộp thư của bạn.";
+      button.disabled = false;
+      button.textContent = "Gửi lại liên kết";
+    });
+  }
+
+  function showUpdatePassword(message = "") {
+    root.innerHTML = `
+      <form class="auth-card" id="recovery-form">
+        <span class="brand-mark">AN</span>
+        <h1>Đặt mật khẩu mới</h1>
+        <p>Chọn mật khẩu mới để tiếp tục sử dụng AnLaundry CRM.</p>
+        <label for="new-password">Mật khẩu mới</label>
+        <input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
+        <label for="confirm-password">Nhập lại mật khẩu</label>
+        <input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+        <p class="error" id="recovery-error" role="alert">${escapeHtml(message)}</p>
+        <button class="btn" type="submit">Cập nhật mật khẩu</button>
+      </form>`;
+
+    document.querySelector("#recovery-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = document.querySelector("#new-password").value;
+      const confirmation = document.querySelector("#confirm-password").value;
+      const errorBox = document.querySelector("#recovery-error");
+      const button = event.currentTarget.querySelector('button[type="submit"]');
+
+      if (password.length < 8) {
+        errorBox.textContent = "Mật khẩu cần có ít nhất 8 ký tự.";
+        return;
+      }
+      if (password !== confirmation) {
+        errorBox.textContent = "Hai mật khẩu chưa trùng khớp.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Đang cập nhật…";
+      errorBox.textContent = "";
+
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) {
+        errorBox.textContent = error.message;
+        button.disabled = false;
+        button.textContent = "Cập nhật mật khẩu";
+        return;
+      }
+
+      passwordRecoveryActive = false;
+      await supabase.auth.signOut();
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showLogin("Mật khẩu đã được cập nhật. Vui lòng đăng nhập bằng mật khẩu mới.");
     });
   }
 
