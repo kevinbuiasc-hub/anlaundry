@@ -18,13 +18,17 @@ CRM vận hành đa chi nhánh, tách biệt với website marketing ở thư m�
 
 Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-## Thiết lập Supabase — chưa thực hiện
+## Thiết lập Supabase
+- Project Development đã được khai báo trong `crm/config.js` bằng Project URL và publishable key.
+- Chưa xác nhận database schema đã được chạy; chưa tạo owner, chi nhánh hoặc dữ liệu nghiệp vụ.
+
+## Thiết lập database — đang chờ thao tác trong Dashboard
 1. Tạo project Supabase riêng cho AnLaundry.
 2. Chỉ sau khi rà soát schema và chuẩn bị project trống, chạy `schema.sql` trong SQL Editor.
 3. Tạo Auth user đầu tiên và thêm hồ sơ owner bằng câu bootstrap trong schema. Không bật public employee signup.
 4. Tạo chi nhánh và phân công owner/manager/staff.
 5. Tạo bảng giá cho từng chi nhánh trong `branch_service_prices`.
-6. Cập nhật `config.js` bằng Project URL và publishable key (hoặc anon key legacy). Key này có thể nằm ở frontend khi RLS đúng.
+6. Cấu hình client đã được ghi vào `config.js`. Sau khi chạy schema và bật RLS đúng, publishable key có thể nằm trong frontend.
 7. Tuyệt đối không đưa `service_role` key, database password hoặc secret vào GitHub/frontend.
 
 ## Trạng thái triển khai
