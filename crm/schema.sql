@@ -297,8 +297,22 @@ create policy branches_owner_manage on public.branches for all to authenticated
   using (public.current_employee_role() = 'owner')
   with check (public.current_employee_role() = 'owner');
 
-create policy profiles_read_self_or_manager on public.profiles for select to authenticated
-  using (id = auth.uid() or public.current_employee_role() in ('owner','manager'));
+create policy profiles_read_self_owner_or_manager_branch on public.profiles for select to authenticated
+  using (
+    id = auth.uid()
+    or public.current_employee_role() = 'owner'
+    or (
+      public.current_employee_role() = 'manager'
+      and exists (
+        select 1
+        from public.staff_branch_assignments a
+        where a.user_id = profiles.id
+          and a.valid_from <= now()
+          and (a.valid_until is null or a.valid_until > now())
+          and public.can_manage_branch(a.branch_id)
+      )
+    )
+  );
 create policy profiles_owner_manage on public.profiles for all to authenticated
   using (public.current_employee_role() = 'owner')
   with check (public.current_employee_role() = 'owner');
