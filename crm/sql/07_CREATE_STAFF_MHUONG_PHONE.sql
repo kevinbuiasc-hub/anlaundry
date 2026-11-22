@@ -9,7 +9,7 @@
 
 DO $$
 DECLARE
-  v_phone text := '+84708401378'; -- Mỹ Hương's phone in international E.164 format
+  v_phone text := '+84839649049'; -- Test phone in international E.164 format (0839649049)
   v_full_name text := 'Mỹ Hương';
   v_role text := 'staff';
   v_branch_code text := 'CN02';
@@ -107,4 +107,4 @@ FROM public.profiles p
 JOIN auth.users u ON u.id = p.id
 JOIN public.staff_branch_assignments a ON a.user_id = p.id
 JOIN public.branches b ON b.id = a.branch_id
-WHERE u.phone = '+84708401378';
+WHERE u.phone = '+84839649049';
