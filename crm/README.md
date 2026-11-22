@@ -54,3 +54,6 @@ Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 - Chưa triển khai Edge Function lên Supabase và chưa thể gửi lời mời nhân viên từ giao diện cho đến khi bước deploy hoàn tất.
 
 - Manager visibility is restricted by RLS to employee profiles with an active assignment in branches they manage. Apply `crm/sql/08_RESTRICT_MANAGER_STAFF_VISIBILITY.sql` to an already initialized development database before enabling Manager access to the staff screen.
+
+- Supabase Edge Function source: `supabase/functions/admin-create-employee/index.ts`.
+- Deployment steps: see `supabase/DEPLOYMENT.md`. Keep JWT verification enabled.
