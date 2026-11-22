@@ -57,3 +57,8 @@ Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 - Supabase Edge Function source: `supabase/functions/admin-create-employee/index.ts`.
 - Deployment steps: see `supabase/DEPLOYMENT.md`. Keep JWT verification enabled.
+
+## Đăng nhập và khôi phục mật khẩu
+- CRM hỗ trợ đăng nhập bằng email/mật khẩu, gửi email khôi phục tại màn hình đăng nhập và cập nhật mật khẩu khi Supabase phát sự kiện `PASSWORD_RECOVERY`.
+- Liên kết khôi phục dùng `redirectTo` bằng URL trang CRM hiện tại. URL này phải được thêm vào Supabase Authentication → URL Configuration → Redirect URLs.
+- Không dùng `http://localhost:3000` làm Site URL cho môi trường preview/production. Chỉ allow-list localhost khi server local thật sự đang chạy.
