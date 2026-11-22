@@ -7,6 +7,10 @@ Source of truth in GitHub:
 
 Supabase project ref: `ropcvgwbwmhbyfsewpqe`
 
+## Database preparation
+
+Before deploying the function, run `crm/sql/09_ADD_PROFILE_PHONE.sql` in the Supabase SQL Editor. The development database was initialized before the `profiles.phone` field was added to the source schema; this migration adds it without deleting existing profiles.
+
 ## Recommended first deployment: Supabase Dashboard editor
 
 1. Open the Supabase project.
