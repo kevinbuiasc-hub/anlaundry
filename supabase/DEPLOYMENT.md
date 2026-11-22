@@ -21,12 +21,14 @@ Before deploying the function, run `crm/sql/09_ADD_PROFILE_PHONE.sql` in the Sup
 6. Click **Deploy function**.
 7. Confirm the function appears in the Edge Functions list.
 
-Keep JWT verification enabled. The project config also records this in `supabase/config.toml`:
+The project uses the new `sb_publishable` API key. Supabase's legacy gateway JWT verifier may reject user tokens signed with asymmetric signing keys. For this function, turn **Verify JWT with legacy secret OFF** in the Dashboard and keep the configuration in `supabase/config.toml` as:
 
 ```toml
 [functions.admin-create-employee]
-verify_jwt = true
+verify_jwt = false
 ```
+
+This does **not** make the endpoint public: the function requires an Authorization bearer token, validates it with `caller.auth.getUser()`, checks the caller's active Owner/Manager profile, and checks branch-management permission before any admin operation. Do not remove these checks or allow anonymous execution.
 
 ## Environment variables
 
@@ -44,6 +46,6 @@ Optional:
 
 - Supabase Dashboard editor deployments are not version-controlled by GitHub. GitHub remains the maintained source. When changing the function later, update GitHub and redeploy the same code in the Dashboard, or use the Supabase CLI.
 - Email invitations require Supabase Email Auth and deliverability/SMTP settings. The current function does not bypass email confirmation.
-- The browser UI calls the function with the signed-in Owner/Manager JWT. Do not turn off JWT verification.
+- The browser UI calls the function with the signed-in Owner/Manager JWT. The gateway's legacy verifier is off for compatibility with new API keys; application-level JWT and role checks inside the function are mandatory.
 - The function checks the caller's role and branch authority before creating an Auth invitation, profile and primary branch assignment.
 - Managers can create Staff only. Only Owners can create Managers.
