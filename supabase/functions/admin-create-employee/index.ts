@@ -91,7 +91,7 @@ Deno.serve(async (req: Request) => {
   const branchId = String(input.branch_id ?? "");
 
   if (!fullName || fullName.length > 120) return jsonResponse({ error: "Họ tên không hợp lệ." }, 400);
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
     return jsonResponse({ error: "Email không hợp lệ." }, 400);
   }
   if (phone.length > 20) return jsonResponse({ error: "Số điện thoại không hợp lệ." }, 400);
