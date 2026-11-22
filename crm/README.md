@@ -44,3 +44,11 @@ Xem chi tiết tại [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## Lưu ý
 `schema.sql` là bản khởi tạo cho Supabase project mới, không phải migration tự động cho database đang có dữ liệu. Cần rà soát và kiểm thử trên project development trước khi chạy production.
+
+
+## Quản lý nhân sự
+- Giao diện danh sách nhân sự nằm trong CRM và chỉ hiện cho Owner/Manager.
+- Thêm nhân viên gọi Edge Function `admin-create-employee`; hàm xác thực JWT và quyền quản lý chi nhánh trước khi mời Auth user, tạo hồ sơ và phân công.
+- Edge Function dùng `SUPABASE_SERVICE_ROLE_KEY` ở môi trường server Supabase; không đặt khóa này trong `crm/config.js` hay bất kỳ mã frontend nào.
+- Cần triển khai hàm bằng Supabase CLI: `supabase functions deploy admin-create-employee`. Các secret mặc định của Supabase Edge Functions cần sẵn có trong môi trường. Email mời phụ thuộc cấu hình Email Auth/SMTP của project.
+- Chưa triển khai Edge Function lên Supabase và chưa thể gửi lời mời nhân viên từ giao diện cho đến khi bước deploy hoàn tất.
