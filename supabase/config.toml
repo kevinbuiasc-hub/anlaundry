@@ -1,4 +1,6 @@
 # AnLaundry Supabase project configuration
-# Keep JWT verification enabled for administrative Edge Functions.
+# This project uses the new sb_publishable key and may issue asymmetric user JWTs.
+# The legacy gateway JWT verifier is disabled; the function verifies the bearer token
+# with auth.getUser() and enforces Owner/Manager and branch permissions in code.
 [functions.admin-create-employee]
-verify_jwt = true
+verify_jwt = false
