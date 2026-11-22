@@ -1,5 +1,3 @@
-import "./styles.css";
-
 const STORAGE_KEY = "anlaundry.crm.demo.v1";
 const today = "2026-11-22";
 const money = value => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(Number(value || 0));
