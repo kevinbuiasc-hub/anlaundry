@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
+import { startDemo } from "./demo.js";
 
 const root = document.querySelector("#app");
 const configured =
@@ -82,6 +83,8 @@ if (!configured) {
         <input id="password" type="password" autocomplete="current-password" required>
         <p class="error" id="error" role="alert">${escapeHtml(message)}</p>
         <button class="btn" type="submit">Đăng nhập</button>
+        <button class="btn btn-outline demo-entry" id="enter-demo" type="button">Trải nghiệm bản demo</button>
+        <p class="demo-caption">Dữ liệu minh họa riêng, không ghi vào Supabase.</p>
         <button class="link-button" id="forgot-password" type="button">Quên mật khẩu?</button>
       </form>`;
 
@@ -106,6 +109,7 @@ if (!configured) {
     });
 
     document.querySelector("#forgot-password").addEventListener("click", showForgotPassword);
+    document.querySelector("#enter-demo").addEventListener("click", () => startDemo(root, showLogin));
   }
 
   function showForgotPassword(message = "", success = false) {
