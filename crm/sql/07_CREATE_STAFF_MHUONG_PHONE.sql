@@ -18,7 +18,7 @@ DECLARE
   v_branch_id uuid;
   v_owner_id uuid;
 BEGIN
-  IF v_phone = '+84708401378' OR v_phone !~ '^\+[1-9][0-9]{7,14}$' THEN
+  IF v_phone IS NULL OR v_phone = '' OR v_phone !~ '^\+[1-9][0-9]{7,14}$' THEN
     RAISE EXCEPTION 'Set Mỹ Hương Auth phone in E.164 format, e.g. +8490xxxxxxx.';
   END IF;
 
