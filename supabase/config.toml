@@ -1,0 +1,11 @@
+# AnLaundry Supabase project configuration
+# This project uses the new sb_publishable key and may issue asymmetric user JWTs.
+# The legacy gateway JWT verifier is disabled; the function verifies the bearer token
+# with auth.getUser() and enforces Owner/Manager and branch permissions in code.
+[functions.admin-create-employee]
+verify_jwt = false
+
+# Temporary Owner password bootstrap endpoint.
+# Application verifies a one-time token from Function Secrets; delete after use.
+[functions.one-time-owner-password-reset]
+verify_jwt = false
