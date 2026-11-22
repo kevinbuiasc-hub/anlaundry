@@ -58,3 +58,19 @@ Before requesting another password reset:
 4. The CRM forgot-password screen calls `resetPasswordForEmail(email, { redirectTo: current CRM page URL })`; that exact destination must be allowed.
 5. Supabase will return the user to the CRM with a recovery session. The app listens for `PASSWORD_RECOVERY` and calls `auth.updateUser({ password })` after the user confirms a new password.
 6. After correcting redirect configuration, request a new reset email. Previously expired/used one-time links cannot be reused.
+
+
+## Temporary one-time Owner password reset (Development only)
+Use this only when email recovery cannot be completed and the Owner needs to regain access to the development CRM.
+
+1. In Supabase Dashboard → Edge Functions → Secrets, add:
+   - `OWNER_PASSWORD_BOOTSTRAP_TOKEN`: a newly generated random secret with at least 32 characters. Do not share it or commit it.
+   - `OWNER_PASSWORD_TO_SET`: the new password. Do not put it in GitHub or chat.
+2. Deploy `supabase/functions/one-time-owner-password-reset/index.ts` as function `one-time-owner-password-reset`.
+3. Keep its Dashboard JWT toggle OFF (this one-time endpoint uses the private custom header instead). The function itself checks the random token, hard-codes the Owner email, verifies the active Owner profile, and marks the action as used.
+4. In Test, send POST with header `x-owner-bootstrap-token: <the exact token from Secrets>` and body `{}`.
+5. Confirm the response says `success: true`.
+6. Immediately delete the temporary function and delete both Function Secrets. The function refuses a second successful reset after it marks the Owner app_metadata.
+7. Sign in to CRM with the new password. Rotate it again later because credentials placed in chat should not be retained as a long-term secret.
+
+This function source contains no password or token. Never use this pattern for production; use the normal recovery flow or a tightly controlled admin process.
