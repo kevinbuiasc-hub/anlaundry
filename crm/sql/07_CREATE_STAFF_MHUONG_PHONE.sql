@@ -9,7 +9,7 @@
 
 DO $$
 DECLARE
-  v_phone text := '+84XXXXXXXXX'; -- Replace with Mỹ Hương's verified Auth phone
+  v_phone text := '+84708401378'; -- Replace with Mỹ Hương's verified Auth phone
   v_full_name text := 'Mỹ Hương';
   v_role text := 'staff';
   v_branch_code text := 'CN02';
@@ -18,7 +18,7 @@ DECLARE
   v_branch_id uuid;
   v_owner_id uuid;
 BEGIN
-  IF v_phone = '+84XXXXXXXXX' OR v_phone !~ '^\+[1-9][0-9]{7,14}$' THEN
+  IF v_phone = '+84708401378' OR v_phone !~ '^\+[1-9][0-9]{7,14}$' THEN
     RAISE EXCEPTION 'Replace v_phone with Mỹ Hương Auth phone in E.164 format, e.g. +8490xxxxxxx.';
   END IF;
 
@@ -107,4 +107,4 @@ FROM public.profiles p
 JOIN auth.users u ON u.id = p.id
 JOIN public.staff_branch_assignments a ON a.user_id = p.id
 JOIN public.branches b ON b.id = a.branch_id
-WHERE u.phone = '+84XXXXXXXXX';
+WHERE u.phone = '+84708401378';
