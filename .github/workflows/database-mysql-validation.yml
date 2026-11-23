@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - crm-database-preview
+      - crm-cloud-preview
     paths:
       - 'database/**'
       - '.github/workflows/database-mysql-validation.yml'
@@ -16,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mysql-version: ['8.0.16', '8.0.36']
+        mysql-version: ['8.0.16', '8.0.36', '8.4.11']
     services:
       mysql:
         image: mysql:${{ matrix.mysql-version }}
