@@ -1,8 +1,6 @@
 -- AN Laundry CRM — MySQL 8.0.16+
--- Schema design is based only on the latest uploaded workbook:
--- "CRM Giặt ủi AN.xlsm" (8 sheets), plus the explicit business rule:
--- service prices are managed independently for each branch by the business owner.
--- Select the target cPanel database in phpMyAdmin before executing this file.
+-- Based only on the latest uploaded "CRM Giặt ủi AN.xlsm" and confirmed branch-pricing rule.
+-- Select a NEW, EMPTY cPanel database before importing. Run seed_data.sql after this file.
 
 SET NAMES utf8mb4;
 SET time_zone = '+07:00';
@@ -14,6 +12,17 @@ CREATE TABLE IF NOT EXISTS roles (
   description VARCHAR(255) NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_roles_code (role_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS company_settings (
+  id TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  business_name VARCHAR(150) NOT NULL,
+  support_phone VARCHAR(30) NULL,
+  support_email VARCHAR(190) NULL,
+  invoice_note VARCHAR(500) NULL,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  CONSTRAINT chk_company_settings_singleton CHECK (id = 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS branches (
@@ -50,19 +59,24 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY uq_users_email (email),
   KEY idx_users_role_active (role_id, is_active),
   CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON UPDATE RESTRICT ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Generated nullable key + UNIQUE index: only one default branch is allowed per user.
 CREATE TABLE IF NOT EXISTS user_branch_access (
   user_id BIGINT UNSIGNED NOT NULL,
   branch_id BIGINT UNSIGNED NOT NULL,
   is_default TINYINT(1) NOT NULL DEFAULT 0,
+  default_user_id BIGINT UNSIGNED GENERATED ALWAYS AS
+    (CASE WHEN is_default = 1 THEN user_id ELSE NULL END) STORED,
   PRIMARY KEY (user_id, branch_id),
+  UNIQUE KEY uq_user_one_default_branch (default_user_id),
   KEY idx_user_branch_branch (branch_id, user_id),
   CONSTRAINT fk_uba_user FOREIGN KEY (user_id) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_uba_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT chk_uba_is_default CHECK (is_default IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS customers (
@@ -103,42 +117,49 @@ CREATE TABLE IF NOT EXISTS service_price_options (
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (id),
   UNIQUE KEY uq_service_option_code (service_id, option_code),
+  UNIQUE KEY uq_option_service_unit (service_id, id, billing_unit),
   KEY idx_price_options_service (service_id, is_active, sort_order),
   CONSTRAINT fk_price_options_service FOREIGN KEY (service_id) REFERENCES services(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT chk_price_option_quote CHECK (default_quote_required IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A separate price record is maintained for every branch and price option.
--- To change a price: close the previous row by setting valid_to, then INSERT a new row.
--- Do not overwrite historical unit_price values.
+-- Separate, versioned rates by branch + service option. Keep historical rows.
 CREATE TABLE IF NOT EXISTS branch_service_prices (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   branch_id BIGINT UNSIGNED NOT NULL,
   price_option_id SMALLINT UNSIGNED NOT NULL,
   unit_price DECIMAL(12,2) NULL,
+  minimum_unit_price DECIMAL(12,2) NULL,
   quote_required TINYINT(1) NOT NULL DEFAULT 0,
   valid_from DATETIME NOT NULL,
   valid_to DATETIME NULL,
   open_period_key TINYINT GENERATED ALWAYS AS
     (CASE WHEN valid_to IS NULL THEN 1 ELSE NULL END) STORED,
-  created_by BIGINT UNSIGNED NULL,
+  created_by BIGINT UNSIGNED NOT NULL,
   change_note VARCHAR(500) NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_branch_option_start (branch_id, price_option_id, valid_from),
   UNIQUE KEY uq_branch_option_open (branch_id, price_option_id, open_period_key),
-  KEY idx_branch_prices_current (branch_id, valid_to, price_option_id),
-  KEY idx_branch_prices_dates (branch_id, price_option_id, valid_from, valid_to),
+  UNIQUE KEY uq_branch_price_option_ref (branch_id, id, price_option_id),
+  KEY idx_branch_prices_current (branch_id, price_option_id, valid_from, valid_to),
   CONSTRAINT fk_bsp_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_bsp_option FOREIGN KEY (price_option_id) REFERENCES service_price_options(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_bsp_user FOREIGN KEY (created_by) REFERENCES users(id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT chk_bsp_period CHECK (valid_to IS NULL OR valid_to > valid_from),
+  CONSTRAINT chk_bsp_quote CHECK (quote_required IN (0, 1)),
   CONSTRAINT chk_bsp_price CHECK (
-    (quote_required = 1 AND unit_price IS NULL)
-    OR (quote_required = 0 AND unit_price IS NOT NULL AND unit_price >= 0)
+    (quote_required = 1 AND unit_price IS NULL AND minimum_unit_price IS NULL)
+    OR
+    (quote_required = 0
+      AND unit_price IS NOT NULL
+      AND unit_price > 0
+      AND (minimum_unit_price IS NULL
+        OR (minimum_unit_price > 0 AND unit_price >= minimum_unit_price)))
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -149,21 +170,24 @@ CREATE TABLE IF NOT EXISTS branch_settings (
   monthly_utilities_reference DECIMAL(14,2) NULL,
   monthly_marketing_reference DECIMAL(14,2) NULL,
   operating_days_per_month TINYINT UNSIGNED NULL,
-  working_capital_reserve DECIMAL(14,2) NULL,
-  receipt_note VARCHAR(500) NULL,
   updated_by BIGINT UNSIGNED NULL,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (branch_id),
   CONSTRAINT fk_branch_settings_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_branch_settings_user FOREIGN KEY (updated_by) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT chk_branch_operating_days CHECK (
     operating_days_per_month IS NULL OR operating_days_per_month BETWEEN 1 AND 31
+  ),
+  CONSTRAINT chk_branch_budgets CHECK (
+    (monthly_rent_reference IS NULL OR monthly_rent_reference >= 0)
+    AND (monthly_labor_reference IS NULL OR monthly_labor_reference >= 0)
+    AND (monthly_utilities_reference IS NULL OR monthly_utilities_reference >= 0)
+    AND (monthly_marketing_reference IS NULL OR monthly_marketing_reference >= 0)
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Customer bands are global, matching the workbook's spend-based grouping rule.
 CREATE TABLE IF NOT EXISTS customer_segments (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   segment_code VARCHAR(40) NOT NULL,
@@ -203,24 +227,24 @@ CREATE TABLE IF NOT EXISTS orders (
   total_amount DECIMAL(14,2) NOT NULL DEFAULT 0,
   discount_reason VARCHAR(500) NULL,
   notes TEXT NULL,
-  invoice_pdf_url VARCHAR(1000) NULL,
   created_by BIGINT UNSIGNED NULL,
   updated_by BIGINT UNSIGNED NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_orders_code (order_code),
+  UNIQUE KEY uq_orders_id_branch (id, branch_id),
   KEY idx_orders_branch_received (branch_id, received_at),
   KEY idx_orders_branch_returned (branch_id, order_status, returned_at),
   KEY idx_orders_branch_paid (branch_id, payment_status, paid_at),
   KEY idx_orders_customer (customer_id, received_at),
   KEY idx_orders_status (order_status, payment_status),
   CONSTRAINT fk_orders_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES customers(id)
     ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT fk_orders_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_orders_created_by FOREIGN KEY (created_by) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT fk_orders_updated_by FOREIGN KEY (updated_by) REFERENCES users(id)
@@ -235,15 +259,21 @@ CREATE TABLE IF NOT EXISTS orders (
     OR (payment_status = 'UNPAID' AND paid_at IS NULL)
   ),
   CONSTRAINT chk_orders_returned_at CHECK (
-    order_status <> 'RETURNED' OR returned_at IS NOT NULL
+    (order_status = 'RETURNED' AND returned_at IS NOT NULL)
+    OR (order_status <> 'RETURNED' AND returned_at IS NULL)
+  ),
+  CONSTRAINT chk_orders_discount_reason CHECK (
+    discount_amount = 0
+    OR (discount_reason IS NOT NULL AND CHAR_LENGTH(TRIM(discount_reason)) > 0)
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- unit_price_snapshot is the price actually agreed at order time.
--- Later branch price changes must never alter existing order lines.
+-- branch_id is intentionally duplicated in order_items so composite FKs
+-- can ensure the item and its branch-specific price belong to the parent order's branch.
 CREATE TABLE IF NOT EXISTS order_items (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   order_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NOT NULL,
   line_number SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   service_id SMALLINT UNSIGNED NOT NULL,
   price_option_id SMALLINT UNSIGNED NOT NULL,
@@ -254,8 +284,10 @@ CREATE TABLE IF NOT EXISTS order_items (
   weight_kg DECIMAL(10,3) NULL,
   item_quantity DECIMAL(10,3) NULL,
   unit_price_snapshot DECIMAL(12,2) NOT NULL,
+  minimum_unit_price_snapshot DECIMAL(12,2) NULL,
   price_source ENUM('BRANCH_PRICE','CUSTOM_QUOTE','OWNER_OVERRIDE') NOT NULL DEFAULT 'BRANCH_PRICE',
   price_override_reason VARCHAR(500) NULL,
+  price_set_by BIGINT UNSIGNED NULL,
   line_subtotal DECIMAL(14,2) GENERATED ALWAYS AS (
     ROUND(
       CASE
@@ -267,24 +299,44 @@ CREATE TABLE IF NOT EXISTS order_items (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_order_line (order_id, line_number),
-  KEY idx_order_items_service (service_id, price_option_id),
-  KEY idx_order_items_price_record (branch_service_price_id),
-  CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id)
+  KEY idx_order_items_order_branch (order_id, branch_id),
+  KEY idx_order_items_service_option (service_id, price_option_id, billing_unit),
+  KEY idx_order_items_branch_price (branch_id, branch_service_price_id, price_option_id),
+  KEY idx_order_items_price_set_by (price_set_by),
+  CONSTRAINT fk_order_items_order_branch FOREIGN KEY (order_id, branch_id)
+    REFERENCES orders(id, branch_id)
     ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT fk_order_items_service FOREIGN KEY (service_id) REFERENCES services(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  CONSTRAINT fk_order_items_option FOREIGN KEY (price_option_id) REFERENCES service_price_options(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  CONSTRAINT fk_order_items_branch_price FOREIGN KEY (branch_service_price_id) REFERENCES branch_service_prices(id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+  -- No ON UPDATE/DELETE clause on FKs whose columns participate in CHECK constraints.
+  CONSTRAINT fk_order_items_service_option FOREIGN KEY (service_id, price_option_id, billing_unit)
+    REFERENCES service_price_options(service_id, id, billing_unit),
+  CONSTRAINT fk_order_items_branch_price FOREIGN KEY (branch_id, branch_service_price_id, price_option_id)
+    REFERENCES branch_service_prices(branch_id, id, price_option_id),
+  CONSTRAINT fk_order_items_price_set_by FOREIGN KEY (price_set_by) REFERENCES users(id),
   CONSTRAINT chk_order_item_quantity CHECK (
     (billing_unit = 'KG' AND weight_kg IS NOT NULL AND weight_kg > 0 AND item_quantity IS NULL)
     OR (billing_unit = 'ITEM' AND item_quantity IS NOT NULL AND item_quantity > 0 AND weight_kg IS NULL)
   ),
-  CONSTRAINT chk_order_item_price CHECK (unit_price_snapshot >= 0),
-  CONSTRAINT chk_order_item_override CHECK (
-    (price_source = 'BRANCH_PRICE' AND branch_service_price_id IS NOT NULL)
-    OR (price_source IN ('CUSTOM_QUOTE','OWNER_OVERRIDE') AND price_override_reason IS NOT NULL)
+  CONSTRAINT chk_order_item_price CHECK (
+    unit_price_snapshot > 0
+    AND (minimum_unit_price_snapshot IS NULL OR minimum_unit_price_snapshot > 0)
+  ),
+  CONSTRAINT chk_order_item_price_source CHECK (
+    (price_source = 'BRANCH_PRICE'
+      AND branch_service_price_id IS NOT NULL
+      AND price_override_reason IS NULL
+      AND (minimum_unit_price_snapshot IS NULL
+        OR unit_price_snapshot >= minimum_unit_price_snapshot))
+    OR
+    (price_source = 'CUSTOM_QUOTE'
+      AND branch_service_price_id IS NULL
+      AND price_override_reason IS NOT NULL
+      AND CHAR_LENGTH(TRIM(price_override_reason)) > 0
+      AND price_set_by IS NOT NULL)
+    OR
+    (price_source = 'OWNER_OVERRIDE'
+      AND price_override_reason IS NOT NULL
+      AND CHAR_LENGTH(TRIM(price_override_reason)) > 0
+      AND price_set_by IS NOT NULL)
   )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -300,8 +352,7 @@ CREATE TABLE IF NOT EXISTS cash_transaction_categories (
   KEY idx_cash_categories_direction (flow_direction, is_active, sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- This ledger stores other income and actual expenses only.
--- Customer payments for orders are recorded on orders, not duplicated here.
+-- Store only other income and actual expenses here; order payments are not duplicated.
 CREATE TABLE IF NOT EXISTS cash_transactions (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   branch_id BIGINT UNSIGNED NOT NULL,
@@ -319,19 +370,20 @@ CREATE TABLE IF NOT EXISTS cash_transactions (
   KEY idx_cash_branch_date (branch_id, transaction_date),
   KEY idx_cash_category_date (category_id, transaction_date),
   CONSTRAINT fk_cash_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_cash_category FOREIGN KEY (category_id) REFERENCES cash_transaction_categories(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_cash_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_cash_recorded_by FOREIGN KEY (recorded_by) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT chk_cash_amount CHECK (amount > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- NULL branch_id means a company-wide setup / working-capital item.
 CREATE TABLE IF NOT EXISTS initial_investments (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  branch_id BIGINT UNSIGNED NOT NULL,
+  branch_id BIGINT UNSIGNED NULL,
   investment_type ENUM('EQUIPMENT','SETUP_COST','WORKING_CAPITAL') NOT NULL DEFAULT 'EQUIPMENT',
   item_name VARCHAR(190) NOT NULL,
   quantity DECIMAL(10,3) NOT NULL DEFAULT 1,
@@ -347,14 +399,13 @@ CREATE TABLE IF NOT EXISTS initial_investments (
   PRIMARY KEY (id),
   KEY idx_investments_branch (branch_id, investment_type, purchase_status),
   CONSTRAINT fk_investments_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_investments_user FOREIGN KEY (created_by) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT chk_investment_amounts CHECK (quantity >= 0 AND unit_cost >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Internal service receipt PDF, as described in the workbook.
--- This is not represented as a statutory e-invoice.
+-- Internal service receipt PDF, not a statutory e-invoice.
 CREATE TABLE IF NOT EXISTS invoices (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   order_id BIGINT UNSIGNED NOT NULL,
@@ -368,7 +419,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   UNIQUE KEY uq_invoice_order (order_id),
   UNIQUE KEY uq_invoice_code (invoice_code),
   CONSTRAINT fk_invoices_order FOREIGN KEY (order_id) REFERENCES orders(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE RESTRICT ON DELETE RESTRICT,
   CONSTRAINT fk_invoices_user FOREIGN KEY (created_by) REFERENCES users(id)
     ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -388,13 +439,14 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   KEY idx_audit_entity (entity_name, entity_id, created_at),
   KEY idx_audit_user_date (user_id, created_at),
   CONSTRAINT fk_audit_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+    ON UPDATE RESTRICT ON DELETE SET NULL,
   CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id)
-    ON UPDATE CASCADE ON DELETE SET NULL
+    ON UPDATE RESTRICT ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- CRM customer metrics corresponding to the Khach hang sheet.
--- "Number of washes" and "kg" count returned orders; spending counts paid returned orders.
+-- Customer formulas from workbook:
+-- order count/weight for returned orders; spend for returned AND paid orders;
+-- promotions for returned orders.
 CREATE OR REPLACE VIEW v_customer_summary AS
 SELECT
   c.id AS customer_id,
@@ -409,13 +461,16 @@ SELECT
   COALESCE(a.total_discount_amount, 0) AS total_discount_amount,
   CASE
     WHEN COALESCE(a.paid_spend, 0) >= (
-      SELECT min_paid_spend FROM customer_segments WHERE segment_code = 'VIP_PRIORITY' AND is_active = 1 LIMIT 1
+      SELECT min_paid_spend FROM customer_segments
+      WHERE segment_code = 'VIP_PRIORITY' AND is_active = 1 LIMIT 1
     ) THEN 'VIP ưu tiên'
     WHEN COALESCE(a.paid_spend, 0) >= (
-      SELECT min_paid_spend FROM customer_segments WHERE segment_code = 'VIP' AND is_active = 1 LIMIT 1
+      SELECT min_paid_spend FROM customer_segments
+      WHERE segment_code = 'VIP' AND is_active = 1 LIMIT 1
     ) THEN 'VIP'
     WHEN COALESCE(a.paid_spend, 0) >= (
-      SELECT min_paid_spend FROM customer_segments WHERE segment_code = 'LOYAL' AND is_active = 1 LIMIT 1
+      SELECT min_paid_spend FROM customer_segments
+      WHERE segment_code = 'LOYAL' AND is_active = 1 LIMIT 1
     ) THEN 'Thân thiết'
     ELSE 'Khách thường'
   END AS customer_segment
@@ -438,7 +493,20 @@ LEFT JOIN (
   GROUP BY o.customer_id
 ) a ON a.customer_id = c.id;
 
--- Financial reporting rules from the workbook:
--- service revenue by returned_at for RETURNED orders;
--- order cash receipts by paid_at for PAID orders;
--- other income and expenses by cash_transactions.transaction_date.
+-- Reconciliation view. Backend writes header totals from order_items inside one transaction.
+CREATE OR REPLACE VIEW v_order_totals AS
+SELECT
+  o.id AS order_id,
+  o.order_code,
+  o.branch_id,
+  o.subtotal_amount AS stored_subtotal_amount,
+  COALESCE(SUM(oi.line_subtotal), 0) AS calculated_subtotal_amount,
+  o.surcharge_amount,
+  o.discount_amount,
+  o.total_amount,
+  (o.subtotal_amount = COALESCE(SUM(oi.line_subtotal), 0)) AS subtotal_matches_items
+FROM orders o
+LEFT JOIN order_items oi ON oi.order_id = o.id
+GROUP BY
+  o.id, o.order_code, o.branch_id, o.subtotal_amount,
+  o.surcharge_amount, o.discount_amount, o.total_amount;
