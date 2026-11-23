@@ -14,6 +14,7 @@ Reviewed against the latest uploaded workbook **CRM Giặt ủi AN.xlsm** and th
 8. **Initial investment scope.** Shared/company-wide investment rows can use \`branch_id=NULL\`; branch-specific rows retain a branch.
 9. **Seed conflict visibility.** Removed \`INSERT IGNORE\`; conflicts now fail visibly instead of being silently skipped.
 10. **Workbook customer formulas.** Customer count and kg count returned orders; paid spend counts returned + paid orders; promotion totals/counts use returned orders. This matches the latest workbook formulas.
+11. **Generated-column FK action.** MySQL rejected `ON DELETE CASCADE` on `user_branch_access.user_id`, because it is the base column of the stored generated `default_user_id`. The FK now uses default RESTRICT. User accounts should be deactivated rather than deleted while branch access rows exist.
 
 ## MySQL compatibility
 
@@ -21,7 +22,8 @@ Reviewed against the latest uploaded workbook **CRM Giặt ủi AN.xlsm** and th
 - CHECK constraints are enforced by MySQL starting at 8.0.16; earlier versions parse but ignore them.
 - Generated-column UNIQUE indexes are used for one open price per branch/option and one default branch per user. MySQL permits multiple NULL values in a UNIQUE index, which is intentional for closed price history / non-default access rows.
 - Constraint identifiers are kept below 64 characters.
-- No local MySQL server or Docker runtime is installed in the review environment. A GitHub Actions matrix now tests DDL, seed imports and key business rules on MySQL 8.0.16 and 8.0.36. Do not call runtime validation passed until those jobs complete successfully.
+- **Runtime validation passed** in GitHub Actions on MySQL 8.0.16 and 8.0.36. Both jobs imported `schema.sql` and `seed_data.sql`, ran `mysql_smoke_test.sql`, and verified enforced CHECK constraints. Both emitted `MYSQL_CRM_SMOKE_TEST_PASSED`. Run: https://github.com/kevinbuiasc-hub/anlaundry/actions/runs/45121494057
+- Tests covered distinct branch prices, order subtotal reconciliation, customer summary formulas, rejection of cross-branch price references, rejection of a mismatched KG/ITEM unit, and rejection of a second open price row for the same branch/option.
 
 ## Controls still required in the backend
 
