@@ -72,8 +72,8 @@ CREATE TABLE IF NOT EXISTS user_branch_access (
   PRIMARY KEY (user_id, branch_id),
   UNIQUE KEY uq_user_one_default_branch (default_user_id),
   KEY idx_user_branch_branch (branch_id, user_id),
-  CONSTRAINT fk_uba_user FOREIGN KEY (user_id) REFERENCES users(id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
+  -- user_id is a base column of generated default_user_id; keep default RESTRICT actions.
+  CONSTRAINT fk_uba_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_uba_branch FOREIGN KEY (branch_id) REFERENCES branches(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT chk_uba_is_default CHECK (is_default IN (0, 1))
