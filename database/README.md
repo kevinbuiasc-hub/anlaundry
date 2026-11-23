@@ -1,97 +1,86 @@
 # AN Laundry CRM database
 
 ## Source of truth
+Based only on the latest uploaded workbook **CRM Giặt ủi AN.xlsm**. Earlier CRM files are excluded.
 
-This database draft is based on the latest workbook supplied in this project:
-**CRM Giặt ủi AN.xlsm**. Earlier CRM workbook versions are intentionally excluded.
+The workbook has 8 sheets: Tong quan, Bao cao kinh doanh, Khach hang, Don giat, Thu chi, Dau tu ban dau, Cau hinh, Hoa don.
 
-The workbook has eight sheets:
+## Branch-specific pricing
+Every active branch has its own price per service/size option. Only the OWNER role may create, schedule, or change prices; this permission must be enforced by the server/backend, not just by hiding UI controls.
 
-1. Tong quan — dashboard derived from operating data.
-2. Bao cao kinh doanh — monthly operating report.
-3. Khach hang — customer master and derived customer metrics.
-4. Don giat — orders, service quantities, prices, surcharge, promotion, payment and status.
-5. Thu chi — other income and actual expenses.
-6. Dau tu ban dau — initial investment and working capital.
-7. Cau hinh — service prices, item/size rates, budget references and customer spend tiers.
-8. Hoa don — internal payment receipt/PDF lookup.
+- Global service and size catalogue: \`services\`, \`service_price_options\`.
+- Branch-specific price history: \`branch_service_prices\`.
+- One open-ended row per branch/option is enforced by a UNIQUE index on a stored generated column. Closed rows generate NULL, and MySQL UNIQUE indexes permit multiple NULL values.
+- \`minimum_unit_price\` stores the branch-specific floor for applicable per-item services (the workbook's teddy bear and blanket minimums).
+- Quote-only options use \`quote_required=1\` and \`unit_price=NULL\`.
+- On order acceptance, the backend reads the price for the order's branch and saves \`unit_price_snapshot\` and \`minimum_unit_price_snapshot\` to \`order_items\`.
+- Composite FKs prevent using another branch's price, another service's option, or a KG/ITEM unit that does not match the selected option.
+- Historical price rows referenced by orders cannot be deleted.
 
-## Important multi-branch pricing rule
+When changing a price:
+1. Begin transaction.
+2. Lock the branch/option's price rows with \`SELECT ... FOR UPDATE\`.
+3. Reject any overlapping \`valid_from\` / \`valid_to\` period.
+4. Close the old row at the new \`valid_from\`.
+5. Insert a new row with the price, floor, quote flag, \`created_by\` and change note.
+6. Add an audit log and commit.
 
-Prices are **not global**. Each branch has its own active price for each service/size option. The business owner is the role that may create and publish branch price changes. Branch managers and staff can read the prices assigned to their branch but must not change them.
+MySQL does not provide a native exclusion constraint for time-range overlaps; the backend transaction must enforce that check. The unique open-row key prevents two open-ended rows.
 
-- The global service catalog is stored in \`services\` and \`service_price_options\`.
-- Actual rates are stored in \`branch_service_prices\`, keyed by branch and price option.
-- Price changes are versioned: close the previous row with \`valid_to\`, then insert a new row with a new \`valid_from\`. Do not overwrite an old unit price.
-- Every order item stores \`unit_price_snapshot\`, the amount applied at the time the order was accepted. Later price changes must not alter old orders or receipts.
-- The backend must authorize price create/update actions to the OWNER role. Do not rely on hiding controls in the browser alone.
-- A branch should not accept a billable order line until the required branch price is configured, except where the service is explicitly a custom quote.
+## Branch seed
+- AnLaundry Hiệp Bình — 18A Đường số 16, Khu phố 4, Hiệp Bình, TP. Hồ Chí Minh.
+- AnLaundry Hòa Hưng — 463B/84 Cách Mạng Tháng 8, Hòa Hưng, TP. Hồ Chí Minh.
 
-The workbook's Cau hinh sheet contains one set of prices, not a price list per branch. Therefore this seed intentionally does **not** assign those values to both branches. The owner must confirm which branch those workbook values belong to, then enter each branch's rates separately. This avoids silently copying one branch's prices to another.
+The seed deliberately contains no branch prices, users, customer records or example orders. The workbook has only one price configuration, so it is not copied to both branches.
 
-## Branches included
-
-The seed file includes the two AnLaundry branches already configured in the website project:
-
-- AnLaundry Hiệp Bình
-- AnLaundry Hòa Hưng
-
-No CRM customer/order data or user password is seeded.
-
-## Core workbook-to-database mapping
-
+## Workbook mapping
 | Workbook sheet | Database |
 |---|---|
-| Tong quan | dashboard queries / API aggregation |
-| Bao cao kinh doanh | monthly queries filtered by branch or all branches |
+| Tong quan | API/dashboard aggregates |
+| Bao cao kinh doanh | Monthly queries by branch, return date, paid date and cash transaction date |
 | Khach hang | \`customers\`, \`v_customer_summary\`, \`customer_segments\` |
-| Don giat | \`orders\`, \`order_items\`, \`services\`, branch price snapshot |
+| Don giat | \`orders\`, \`order_items\`, services and branch price snapshots |
 | Thu chi | \`cash_transactions\`, \`cash_transaction_categories\` |
-| Dau tu ban dau | \`initial_investments\`, \`branch_settings.working_capital_reserve\` |
-| Cau hinh | \`branch_service_prices\`, \`branch_settings\`, \`customer_segments\` |
-| Hoa don | \`invoices\` and order data |
+| Dau tu ban dau | \`initial_investments\`; NULL branch means company-wide |
+| Cau hinh | \`company_settings\`, \`branch_settings\`, \`branch_service_prices\`, \`customer_segments\` |
+| Hoa don | \`invoices\` plus order, customer and branch data; internal receipt only |
 
-## Business rules retained
+## Rules retained
+- Clothes are billed by kg; teddy bears and blankets are billed by item and size/type.
+- Order-level surcharge and manual promotion amount/reason are stored separately.
+- Workflow values: PENDING, PROCESSING, RETURNED, CANCELLED.
+- Payment values: UNPAID and PAID; payment method is separate.
+- Seeded methods are exactly the workbook's Tiền mặt and Chuyển khoản.
+- Customer order count and kg count RETURNED orders; paid spend counts only RETURNED + PAID; promotions are summed for RETURNED orders. This matches the latest workbook's formulas.
+- Customer segments use thresholds 1,000,000đ, 3,000,000đ and 5,000,000đ across branches.
+- Service revenue is recognized by return date for RETURNED orders.
+- Order receipts are recognized by paid date for PAID orders.
+- Other income and actual expenses use the transaction date in Thu chi.
+- Do not duplicate order payments in the Thu chi ledger.
+- Initial investments remain separate from operating expenses; company-wide items may have NULL branch_id.
 
-- Clothing services are billed by kilogram.
-- Teddy bear and blanket services are billed by item and the workbook's size/type options are represented in \`service_price_options\`.
-- The workbook supports additional surcharge and a manual promotion amount with a reason.
-- Order payment status is separate from order processing status.
-- Workbook order statuses: Chờ xử lý, Đang xử lý, Đã trả, Đã hủy.
-- Payment statuses: Chưa thanh toán, Đã thanh toán.
-- Order payment methods in the workbook: Tiền mặt and Chuyển khoản. The broader methods from Thu chi are also represented.
-- Do not record order payment a second time in the Thu chi ledger.
-- Service revenue is reported by the return/delivery date of returned orders.
-- Cash received from orders is reported by paid date.
-- Other income and actual expenses are reported by the transaction date in Thu chi.
-- Initial investment is tracked separately from monthly operating expenses.
-- Customer segments are based on lifetime paid spend, with workbook thresholds: 1,000,000đ; 3,000,000đ; and 5,000,000đ.
-- No loyalty-points ledger is included because the latest workbook does not use points.
-
-## cPanel / MySQL deployment
-
+## cPanel / MySQL
 Target: MySQL **8.0.16+**, InnoDB, utf8mb4.
+1. Create a fresh database and database user in cPanel; grant privileges to that database.
+2. Select the empty database in phpMyAdmin.
+3. Import \`schema.sql\`.
+4. Import \`seed_data.sql\` once.
+5. Create the first OWNER account via a secure server-side bootstrap. Never commit credentials or production password hashes.
+6. As OWNER, configure each branch's rate list and item minimums before accepting billable orders.
+7. Configure the branch-specific reference budgets and company invoice settings.
 
-1. In cPanel, create the MySQL database and a database user. Grant that user the required privileges on this database.
-2. Open phpMyAdmin and select the newly created database.
-3. Import \`schema.sql\` first.
-4. Import \`seed_data.sql\` second.
-5. Create the first OWNER user through a secure backend setup process. Never store a plaintext password in SQL or commit credentials to GitHub.
-6. Sign in as the owner and configure a separate price list for every active branch before allowing staff to create billable orders.
-7. Configure branch-specific monthly reference budgets and receipt note as required.
+This schema is for a fresh install. \`CREATE TABLE IF NOT EXISTS\` does not migrate an existing structure. Use versioned migration files for future changes.
 
-Do not commit real customer records, password hashes, database credentials, API keys, or production exports to this repository.
+## Backend controls
+- Use parameterized queries and credentials outside the public web root/GitHub.
+- Enforce OWNER-only pricing management server-side and restrict staff to \`user_branch_access\`.
+- Create order header + lines + amounts inside one transaction.
+- Calculate \`subtotal_amount\` from \`order_items.line_subtotal\`; \`v_order_totals\` supports reconciliation.
+- Lock and validate price history when publishing a change.
+- Preserve financial history and referenced branch price records.
+- Audit price, discount, total, payment, role/access and cash changes.
 
-## Backend responsibilities
+## Validation
+The workflow \`.github/workflows/database-mysql-validation.yml\` imports schema + seed and runs \`database/tests/mysql_smoke_test.sql\` against MySQL 8.0.16 and 8.0.36. Only report runtime validation as passed when both workflow jobs succeed.
 
-- Use prepared statements / parameterized queries.
-- Keep DB credentials in hosting environment configuration outside the public web root and outside GitHub.
-- Enforce role-based access on the server: OWNER can manage all branches and price lists; branch users are limited to assigned branches.
-- When accepting an order, load the current price for that order's branch and price option, then save the price snapshot in order_items.
-- Calculate order subtotal, surcharge, promotion and total within a database transaction.
-- When a price changes, close the active price row and insert a new row in one transaction.
-- Restrict order update/delete after cancellation/return according to business policy; retain an audit trail for financial and price changes.
-
-## Draft status
-
-This is a reviewable initial schema package on branch \`crm-database-preview\`. It is not yet imported into the live cPanel database and is not merged into \`main\`.
+This audit revision remains on \`crm-database-preview\`; it is not deployed to cPanel or merged into \`main\`.
