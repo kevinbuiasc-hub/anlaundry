@@ -67,7 +67,7 @@ Vì vậy:
 
 Tạo một Railway Project với môi trường riêng tên `preview`, gồm:
 
-- Service `mysql`: dùng MySQL template chính thức; gắn persistent volume vào đúng thư mục dữ liệu MySQL; database chỉ truy cập từ private network.
+- Service `mysql`: tạo từ Docker Image `mysql:8.4.11` (MySQL 8.4 LTS đã được GitHub Actions kiểm thử thành công). Không dùng nút triển khai template MySQL mặc định của Railway ở thời điểm hiện tại vì template đang cấu hình image `mysql:9.4`. Gắn persistent volume vào `/var/lib/mysql` trước khi nhập dữ liệu; database chỉ truy cập từ private network.
 - Service `api`: deploy từ thư mục backend trong repository; có public HTTPS domain cho API.
 - API kết nối database qua private service variables/connection string của Railway; không dùng public TCP proxy giữa hai service cùng project.
 - CORS chỉ cho phép origin CRM preview và sau này là origin website chính xác.
@@ -76,6 +76,9 @@ Tạo một Railway Project với môi trường riêng tên `preview`, gồm:
 Không khởi tạo project Railway bằng dữ liệu sản xuất hoặc bí mật được lưu trong GitHub.
 
 ## 6. Import database an toàn
+
+GitHub Actions run `45123336699` đã hoàn tất thành công trên MySQL `8.0.16`, `8.0.36` và `8.4.11`, bao gồm import schema, seed data, smoke test và xác minh CHECK constraints. Kết quả: https://github.com/kevinbuiasc-hub/anlaundry/actions/runs/45123336699
+
 
 Chỉ dùng môi trường `preview` mới, database trống:
 1. Tạo MySQL service và xác nhận phiên bản tương thích MySQL 8.0.16+.
