@@ -1,0 +1,55 @@
+name: CRM database MySQL validation
+
+on:
+  push:
+    branches:
+      - crm-database-preview
+    paths:
+      - 'database/**'
+      - '.github/workflows/database-mysql-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  mysql-validation:
+    name: MySQL \${{ matrix.mysql-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mysql-version: ['8.0.16', '8.0.36']
+    services:
+      mysql:
+        image: mysql:\${{ matrix.mysql-version }}
+        env:
+          MYSQL_ROOT_PASSWORD: crm_test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pcrm_test_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -pcrm_test_password --silent; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "MySQL service did not become ready"
+          exit 1
+      - name: Create empty test database
+        run: mysql -h 127.0.0.1 -uroot -pcrm_test_password -e "CREATE DATABASE anlaundry_crm_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      - name: Import schema
+        run: mysql --default-character-set=utf8mb4 -h 127.0.0.1 -uroot -pcrm_test_password anlaundry_crm_test < database/schema.sql
+      - name: Import reference data
+        run: mysql --default-character-set=utf8mb4 -h 127.0.0.1 -uroot -pcrm_test_password anlaundry_crm_test < database/seed_data.sql
+      - name: Run schema and business-rule smoke tests
+        run: mysql --default-character-set=utf8mb4 -h 127.0.0.1 -uroot -pcrm_test_password anlaundry_crm_test < database/tests/mysql_smoke_test.sql
+      - name: Verify enforced CHECK constraints
+        run: |
+          mysql -h 127.0.0.1 -uroot -pcrm_test_password anlaundry_crm_test -N -e "SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA='anlaundry_crm_test' AND CONSTRAINT_TYPE='CHECK' AND ENFORCED='YES';" | grep -Eq '^[1-9][0-9]*$'
