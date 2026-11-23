@@ -11,7 +11,7 @@ on:
 
 jobs:
   mysql-validation:
-    name: MySQL \${{ matrix.mysql-version }}
+    name: MySQL ${{ matrix.mysql-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,7 +19,7 @@ jobs:
         mysql-version: ['8.0.16', '8.0.36']
     services:
       mysql:
-        image: mysql:\${{ matrix.mysql-version }}
+        image: mysql:${{ matrix.mysql-version }}
         env:
           MYSQL_ROOT_PASSWORD: crm_test_password
         ports:
