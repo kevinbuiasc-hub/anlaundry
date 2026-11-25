@@ -45,6 +45,11 @@
     .article-content a:hover{color:#003154}
     a:focus-visible{outline:3px solid rgba(0,169,210,.45);outline-offset:3px}
   </style>
+<style>
+    .related-card:hover .related-thumb{transform:scale(1.035)}
+    .related-thumb{transition:transform .25s ease}
+    @media (prefers-reduced-motion: reduce){.related-thumb{transition:none}.related-card:hover .related-thumb{transform:none}}
+  </style>
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -171,14 +176,33 @@
         <p>Trước khi mang quần áo đến <a href="https://www.anlaundry.com/">An Laundry</a>, hãy dành ít phút lấy vật dụng cá nhân ra khỏi túi. Nếu phát hiện còn đồ bên trong khi đến cửa hàng, hãy thông báo tại quầy để được kiểm tra trước khi giặt.</p>
         <p><strong>An Laundry – Giặt sạch, thơm lâu. An tâm mỗi ngày.</strong></p>
 
-        <div class="mt-8 rounded-2xl bg-cyan-50 p-6">
-          <p class="mb-2 font-bold text-brand-navy">Đọc thêm kiến thức chăm sóc quần áo</p>
-          <p class="mb-2"><a href="/blog/vi-sao-quan-ao-giat-xong-van-co-mui-hoi/">Vì sao quần áo giặt xong vẫn có mùi hôi? 5 nguyên nhân và cách khắc phục hiệu quả</a></p>
-          <p class="mb-0"><a href="/blog/">Xem thêm bài viết kiến thức giặt sấy</a></p>
-        </div>
         <p class="mt-6 text-sm text-gray-500">Lưu ý: Mức độ ảnh hưởng phụ thuộc vào loại vật dụng, chất liệu quần áo, cấu tạo máy và tình huống cụ thể. Không phải mọi vật dụng bị bỏ quên đều chắc chắn gây hư hỏng.</p>
       </div>
     </article>
+
+    <section class="mt-12 border-t border-brand-gray pt-9 sm:mt-14" aria-labelledby="related-reading-heading">
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="related-reading-heading" class="font-display text-2xl font-bold tracking-tight text-brand-navy sm:text-[27px]">Nên đọc thêm</h2>
+        <a href="/blog/" class="inline-flex items-center gap-1 text-sm font-bold text-brand-cyan transition hover:text-brand-navy">
+          Xem tất cả bài viết <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <article class="related-card min-w-0 overflow-hidden rounded-xl border border-brand-gray bg-white shadow-sm transition hover:shadow-md">
+          <a href="/blog/vi-sao-quan-ao-giat-xong-van-co-mui-hoi/" class="group block" aria-label="Đọc bài viết Vì sao quần áo giặt xong vẫn có mùi hôi?">
+            <div class="h-48 overflow-hidden bg-[#E7F7FC] sm:h-52">
+              <img src="https://www.anlaundry.com/assets/vi-sao-giat-say-van-hoi.png" alt="Minh họa các nguyên nhân khiến quần áo giặt xong vẫn có mùi hôi" class="related-thumb h-full w-full object-cover" width="1200" height="900" loading="lazy" />
+            </div>
+            <div class="p-5">
+              <p class="mb-2 text-[11px] font-bold uppercase tracking-[0.055em] text-brand-cyan">Kiến thức giặt sấy</p>
+              <h3 class="mb-2 min-h-[50px] font-display text-lg font-bold leading-[1.38] tracking-tight text-brand-navy">Vì sao quần áo giặt xong vẫn có mùi hôi?</h3>
+              <p class="mb-4 min-h-[64px] text-[13px] leading-[1.65] text-gray-600">Tìm hiểu 5 nguyên nhân thường gặp và cách xử lý để quần áo sạch, khô thoáng hơn.</p>
+              <span class="inline-flex items-center gap-2 text-[13px] font-bold text-brand-cyan transition group-hover:text-brand-navy">Đọc bài viết <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </article>
+      </div>
+    </section>
 
     <div class="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl bg-brand-navy p-6 text-white sm:flex-row sm:p-8">
       <div><h2 class="font-display text-xl font-bold">Bạn cần giặt sấy?</h2><p class="mt-2 text-sm text-white/80">Tìm hiểu thông tin dịch vụ và chi nhánh An Laundry.</p></div>
