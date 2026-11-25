@@ -44,7 +44,19 @@
     .article-content a{color:#008db3;text-decoration:underline;text-underline-offset:3px;font-weight:600}
     .article-content a:hover{color:#003154}
     a:focus-visible{outline:3px solid rgba(0,169,210,.45);outline-offset:3px}
-  </style>
+  
+    /* Shared An Laundry card hover: consistent cyan border across the website. */
+    .site-card-hover {
+      transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+    .site-card-hover:hover,
+    .site-card-hover:focus-within {
+      border-color: #0DADD2 !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .site-card-hover { transition: none; }
+    }
+</style>
 <style>
     .related-card:hover .related-thumb{transform:scale(1.035)}
     .related-thumb{transition:transform .25s ease}
@@ -220,7 +232,7 @@
         </a>
       </div>
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <article class="related-card min-w-0 overflow-hidden rounded-xl border border-brand-gray bg-white shadow-sm transition hover:shadow-md">
+        <article class="related-card min-w-0 overflow-hidden rounded-xl border border-brand-gray bg-white shadow-sm transition hover:shadow-md site-card-hover">
           <a href="/blog/vi-sao-quan-ao-giat-xong-van-co-mui-hoi/" class="group block" aria-label="Đọc bài viết Vì sao quần áo giặt xong vẫn có mùi hôi?">
             <div class="h-48 overflow-hidden bg-[#E7F7FC] sm:h-52">
               <img src="https://www.anlaundry.com/assets/vi-sao-giat-say-van-hoi.png" alt="Minh họa các nguyên nhân khiến quần áo giặt xong vẫn có mùi hôi" class="related-thumb h-full w-full object-cover" width="1200" height="900" loading="lazy" />
