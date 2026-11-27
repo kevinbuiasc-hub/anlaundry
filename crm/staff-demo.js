@@ -289,7 +289,7 @@ export function startStaffDemo(root, exitToLogin) {
         <form id="staff-order-form" class="form-grid">
           <div class="form-full"><label for="customer-phone">Số điện thoại khách hàng *</label>
             <input id="customer-phone" type="tel" inputmode="numeric" autocomplete="off" maxlength="14"
-              placeholder="Nhập số điện thoại khách hàng" value="${staffEsc(existingCustomer?.phone || "")}" required>
+              placeholder="Nhập số điện thoại khách hàng" value="${staffEsc(existingCustomer?.phone || "")}" required ${paidLocked ? "disabled" : ""}>
             <div class="employee-sub">Nhập số điện thoại để tự động nhận diện khách hàng.</div></div>
           <div class="form-full"><label>Tên khách hàng</label>
             <input id="customer-name-display" class="readonly-field" type="text" readonly
@@ -304,14 +304,14 @@ export function startStaffDemo(root, exitToLogin) {
                 <button class="btn btn-small" id="save-inline-customer" type="button">Lưu khách hàng</button></div>
             </div></div>
           <div><label for="service-type">Dịch vụ giặt *</label>
-            <select id="service-type" name="service" required>
+            <select id="service-type" name="service" required ${paidLocked ? "disabled" : ""}>
               ${serviceOptions.map(value => '<option value="' + value + '"' + (value === currentService ? " selected" : "") + ">" + value + "</option>").join("")}
             </select></div>
-          <div id="item-type-wrap"><label for="item-type">Loại món / kích thước</label><select id="item-type" name="itemType"></select></div>
+          <div id="item-type-wrap"><label for="item-type">Loại món / kích thước</label><select id="item-type" name="itemType" ${paidLocked ? "disabled" : ""}></select></div>
           <div id="service-description-wrap" hidden><label for="service-description">Mô tả dịch vụ</label>
-            <input id="service-description" name="description" placeholder="Nhập tên dịch vụ khác" value="${staffEsc(existing?.description || "")}"></div>
+            <input id="service-description" name="description" placeholder="Nhập tên dịch vụ khác" value="${staffEsc(existing?.description || "")}" ${paidLocked ? "readonly" : ""}></div>
           <div><label for="order-quantity">Số Kg / SL *</label>
-            <input id="order-quantity" name="quantity" type="number" min="0.1" step="0.1" value="${staffEsc(existing?.quantity ?? 1)}" required></div>
+            <input id="order-quantity" name="quantity" type="number" min="0.1" step="0.1" value="${staffEsc(existing?.quantity ?? 1)}" required ${paidLocked ? "readonly" : ""}></div>
           <div><label for="order-unit-price">Đơn giá (đ) *</label>
             <input id="order-unit-price" class="readonly-field" name="unitPrice" type="number" min="0"
               value="${staffEsc(existing?.unitPrice ?? 15000)}" readonly></div>
@@ -353,6 +353,7 @@ export function startStaffDemo(root, exitToLogin) {
     const quantityInput = document.querySelector("#order-quantity");
     const preview = document.querySelector("#order-total-preview");
     const form = document.querySelector("#staff-order-form");
+    let previouslyManual = isManualService(currentService, currentType);
 
     function lookupCustomer() {
       const phone = normalizeStaffPhone(phoneInput.value);
@@ -380,8 +381,8 @@ export function startStaffDemo(root, exitToLogin) {
     function updatePrice() {
       const service = serviceSelect.value;
       const manual = isManualService(service, itemSelect.value);
-      unitPriceInput.readOnly = !manual;
-      unitPriceInput.classList.toggle("readonly-field", !manual);
+      unitPriceInput.readOnly = paidLocked || !manual;
+      unitPriceInput.classList.toggle("readonly-field", paidLocked || !manual);
       if (!manual) unitPriceInput.value = servicePrice(service, itemSelect.value, 0);
       else if (!previouslyManual) unitPriceInput.value = "";
       previouslyManual = manual;
