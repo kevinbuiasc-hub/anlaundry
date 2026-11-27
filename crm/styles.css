@@ -72,3 +72,18 @@ button,.nav-item,.icon-button,.text-action{min-height:40px}
   .stat strong{font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+
+/* Staff CRM demo: phone lookup, locked branch field and printable invoice. */
+.readonly-field{background:#f2f6f8!important;color:#758591!important;cursor:not-allowed}
+.inline-customer-panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:10px;background:#f8fbfc}
+.inline-customer-panel label{display:block;font-size:12px;font-weight:700;color:#405565;margin:0 0 7px}
+.inline-customer-panel input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font:13px Inter;background:#fff;color:#253746}
+.invoice-paper{max-width:760px;margin:20px auto}
+.staff-demo-entry{border-color:#b9e5f0!important;color:var(--navy)!important}
+@media print{
+  body *{visibility:hidden!important}
+  .invoice-paper,.invoice-paper *{visibility:visible!important}
+  .invoice-paper{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;border:0!important;box-shadow:none!important}
+  .invoice-paper .form-actions{display:none!important}
+}
