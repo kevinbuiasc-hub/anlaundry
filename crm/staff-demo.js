@@ -174,9 +174,9 @@ export function startStaffDemo(root, exitToLogin) {
             return "<tr><td><strong>" + staffEsc(order.id) + "</strong></td><td>" +
               staffEsc(customer?.name || "Khách hàng") + '<div class="employee-sub">' +
               staffEsc(customer?.phone || "") + "</div></td><td>" + staffEsc(order.service) +
-              "</td><td>" + staffMoney(orderAmount(order)) + '<span class="state-pill">' +
+              "</td><td>" + staffMoney(orderAmount(order)) + '</td><td><span class="state-pill">' +
               staffEsc(order.status) + "</span></td></tr>";
-          }).join(""))));
+          }).join("")));
   }
 
   function renderCustomers(content) {
@@ -383,6 +383,8 @@ export function startStaffDemo(root, exitToLogin) {
       unitPriceInput.readOnly = !manual;
       unitPriceInput.classList.toggle("readonly-field", !manual);
       if (!manual) unitPriceInput.value = servicePrice(service, itemSelect.value, 0);
+      else if (!previouslyManual) unitPriceInput.value = "";
+      previouslyManual = manual;
       const descriptionInput = document.querySelector("#service-description");
       const quantity = Number(quantityInput.value || 0);
       const price = Number(unitPriceInput.value || 0);
